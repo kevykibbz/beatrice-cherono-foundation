@@ -1,0 +1,105 @@
+import React from "react";
+import {
+  EnvelopeIcon,
+  MapPinIcon,
+  PhoneIcon,
+} from "@heroicons/react/24/outline";
+import { FaFacebook, FaTwitter, FaLinkedin, FaYoutube } from "react-icons/fa";
+
+const Footer:React.FC = () => {
+  return (
+    <div className="bg-[#0D1B1E] text-white py-12 mt-[-20px]">
+      <div className="container mx-auto px-6 lg:px-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Brand Section */}
+          <div>
+            <h1 className="font-bold text-2xl  mb-4">
+              Beatrice Cherono <span className="text-purple-500">Melly</span> Foundation
+            </h1>
+            <p className="text-gray-400 mb-4">
+                The main objective of the Organization is to support educational projects, promote environmental conservation, to set up relief of poverty projects/programs, and to promote health initiatives within the scope of its operations.
+            </p>
+            <div className="flex space-x-2">
+              {[
+                { icon: <FaTwitter />, link: "#" },
+                { icon: <FaFacebook />, link: "#" },
+                { icon: <FaYoutube />, link: "#" },
+                { icon: <FaLinkedin />, link: "#" },
+              ].map((item, index) => (
+                <a
+                  key={index}
+                  href={item.link}
+                  className="p-2 border border-gray-500 text-gray-400 rounded hover:bg-purple-600 hover:text-white hover:border-purple-600 transition duration-300"
+                >
+                  {item.icon}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Address Section */}
+          <div>
+            <h5 className="text-white text-lg font-semibold mb-4">Address</h5>
+            <ul className="text-gray-400 space-y-2">
+              <li className="flex items-center">
+                <MapPinIcon className="h-5 w-5 mr-3" /> Eldoret,Uasin Gishu county, Kenya
+              </li>
+              <li className="flex items-center">
+                <PhoneIcon className="h-5 w-5 mr-3" /> +254 739443403
+              </li>
+              <li className="flex items-center">
+                    <EnvelopeIcon className="h-5 w-5 mr-3" />
+                    <span className="truncate">info@beatricecheronomellyfoundation.org</span>
+                </li>
+            </ul>
+          </div>
+
+          {/* Quick Links Section */}
+          <div>
+            <h5 className="text-white text-lg font-semibold mb-4">Quick Links</h5>
+            <ul className="text-gray-400 space-y-2">
+              {[
+                "About Us",
+                "Contact Us",
+                "Our Services",
+                "Terms & Condition",
+                "Support",
+              ].map((link, index) => (
+                <li key={index} className="hover:text-purple-500 transition duration-300 cursor-pointer">
+                  ▶ {link}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Newsletter Section */}
+          <div>
+            <h5 className="text-white text-lg font-semibold mb-4">Newsletter</h5>
+            <p className="text-gray-400 mb-4">
+                Stay updated with our latest projects, success stories, and how you can make a difference. Subscribe to our newsletter today!            </p>
+            <div className="flex">
+              <input
+                type="text"
+                placeholder="Your email"
+                className="bg-transparent border border-gray-500 text-gray-400 px-4 py-2 flex-1 outline-none"
+              />
+              <button className="bg-purple-600 text-white px-5 py-2 font-semibold hover:bg-purple-600 transition duration-300">
+                SignUp
+              </button>
+            </div>
+          </div>
+        </div>
+        {/* Copyright Section */}
+        <div className="border-t border-gray-600 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center text-gray-400 text-sm">            <div>
+                    &copy; Your Site Name, All Rights Reserved.
+            </div>
+            <div>
+                Designed by <a href="https://htmlcodex.com" className="hover:text-purple-500">HTML Codex</a>
+            </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Footer;
