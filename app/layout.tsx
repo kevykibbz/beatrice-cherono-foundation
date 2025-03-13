@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import { Loading } from "./Loading";
 import "./globals.css";
 import Footer from "@/components/Footer/Footer";
-import Header from "@/components/Header/Header";
 import Navbar from "@/components/Navbar/Navbar";
 
 

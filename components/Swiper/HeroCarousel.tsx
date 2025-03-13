@@ -5,6 +5,7 @@ import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
 
 interface Slide {
   image: string;
@@ -46,7 +47,7 @@ export default function HeroCarousel() {
         {slides.map((slide, index) => (
           <SwiperSlide key={index}>
             <div className="relative">
-              <img
+              <Image
                 src={slide.image}
                 alt={`Slide ${index + 1}`}
                 className="w-full min-h-screen object-cover"
