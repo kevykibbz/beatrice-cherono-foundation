@@ -4,17 +4,15 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@heroicons/react/24/outline";
 import Image from "next/image";
+import { SlideTypes } from "@/types/types";
 
-interface Slide {
-  image: string;
-  title: string;
-  description: string;
-  link: string;
-}
-
-const slides: Slide[] = [
+const slides: SlideTypes[] = [
   {
     image: "/images/carousel-1.jpg",
     title: "Let's Change The World With Humanity",
@@ -50,6 +48,8 @@ export default function HeroCarousel() {
               <Image
                 src={slide.image}
                 alt={`Slide ${index + 1}`}
+                fill
+                priority
                 className="w-full min-h-screen object-cover"
               />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center bg-[rgba(0,29,35,0.8)]">
@@ -78,13 +78,13 @@ export default function HeroCarousel() {
 
       {/* Custom Navigation Buttons */}
       <div className="absolute lg:left-10 lg:right-10 bottom-20 lg:transform lg:translate-y-0 z-10 flex lg:block justify-center mt-4 lg:mt-0">
-  <button className="swiper-button-prev-custom bg-[rgba(0,29,35,0.96)] text-white p-2 rounded-full mx-2 lg:absolute lg:left-0">
-    <ChevronLeftIcon className="h-6 w-6" />
-  </button>
-  <button className="swiper-button-next-custom bg-[rgba(0,29,35,0.96)] text-white p-2 rounded-full mx-2 lg:absolute lg:right-0">
-    <ChevronRightIcon className="h-6 w-6" />
-  </button>
-</div>
+        <button className="swiper-button-prev-custom bg-[rgba(0,29,35,0.96)] text-white p-2 rounded-full mx-2 lg:absolute lg:left-0">
+          <ChevronLeftIcon className="h-6 w-6" />
+        </button>
+        <button className="swiper-button-next-custom bg-[rgba(0,29,35,0.96)] text-white p-2 rounded-full mx-2 lg:absolute lg:right-0">
+          <ChevronRightIcon className="h-6 w-6" />
+        </button>
+      </div>
     </div>
   );
 }

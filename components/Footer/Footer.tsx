@@ -81,7 +81,7 @@ const Footer:React.FC = () => {
               <input
                 type="text"
                 placeholder="Your email"
-                className="bg-transparent border border-gray-500 text-gray-400 px-4 py-2 flex-1 outline-none"
+                className="bg-transparent border border-purple-500 text-gray-400 px-4 py-2 flex-1 outline-none"
               />
               <button className="bg-purple-600 text-white px-5 py-2 font-semibold hover:bg-purple-600 transition duration-300">
                 SignUp
@@ -91,10 +91,10 @@ const Footer:React.FC = () => {
         </div>
         {/* Copyright Section */}
         <div className="border-t border-gray-600 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center text-gray-400 text-sm">            <div>
-                    &copy; Your Site Name, All Rights Reserved.
+                  &copy; Beatrice Cherono Melly Foundation, All Rights Reserved.
             </div>
             <div>
-                Designed by <a href="https://htmlcodex.com" className="hover:text-purple-500">HTML Codex</a>
+                Designed by <a href="https://tevinly.com" className="hover:text-purple-500">Tevinly</a>
             </div>
         </div>
       </div>

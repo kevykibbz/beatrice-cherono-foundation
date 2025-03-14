@@ -8,3 +8,11 @@ export type LoaderTypes = {
 export type PageTypes={
   title?:string
 }
+
+
+export interface SlideTypes {
+  image: string;
+  title: string;
+  description: string;
+  link: string;
+}
