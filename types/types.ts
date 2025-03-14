@@ -10,6 +10,11 @@ export type PageTypes={
 }
 
 
+export type PathTypes={
+  name:string
+  path:string
+}
+
 export interface SlideTypes {
   image: string;
   title: string;
@@ -30,4 +35,12 @@ export interface TeamMembersTypes {
   name: string;
   designation: string;
   img:string;
+}
+
+
+export type TestimonialsTypes={
+  name:string
+  profession:string
+  image:string
+  text:string
 }

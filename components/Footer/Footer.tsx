@@ -5,8 +5,19 @@ import {
   PhoneIcon,
 } from "@heroicons/react/24/outline";
 import { FaFacebook, FaTwitter, FaLinkedin, FaYoutube } from "react-icons/fa";
+import { PathTypes } from "@/types/types";
 
-const Footer:React.FC = () => {
+const paths: PathTypes[] = [
+  { name: "Home", path: "/" },
+  { name: "About", path: "/about" },
+  { name: "Causes", path: "/causes" },
+  { name: "Services", path: "/services" },
+  { name: "Our Teams", path: "/teams" },
+  { name: "Testimonials", path: "/testimonials" },
+  { name: "Contact", path: "/contact" },
+];
+
+const Footer: React.FC = () => {
   return (
     <div className="bg-[#0D1B1E] text-white py-12 mt-[-20px]">
       <div className="container mx-auto px-6 lg:px-16">
@@ -14,10 +25,14 @@ const Footer:React.FC = () => {
           {/* Brand Section */}
           <div>
             <h1 className="font-bold text-2xl  mb-4">
-              Beatrice Cherono <span className="text-purple-500">Melly</span> Foundation
+              Beatrice Cherono <span className="text-purple-500">Melly</span>{" "}
+              Foundation
             </h1>
             <p className="text-gray-400 mb-4">
-                The main objective of the Organization is to support educational projects, promote environmental conservation, to set up relief of poverty projects/programs, and to promote health initiatives within the scope of its operations.
+              The main objective of the Organization is to support educational
+              projects, promote environmental conservation, to set up relief of
+              poverty projects/programs, and to promote health initiatives
+              within the scope of its operations.
             </p>
             <div className="flex space-x-2">
               {[
@@ -42,31 +57,34 @@ const Footer:React.FC = () => {
             <h5 className="text-white text-lg font-semibold mb-4">Address</h5>
             <ul className="text-gray-400 space-y-2">
               <li className="flex items-center">
-                <MapPinIcon className="h-5 w-5 mr-3" /> Eldoret,Uasin Gishu county, Kenya
+                <MapPinIcon className="h-5 w-5 mr-3" /> Eldoret,Uasin Gishu
+                county, Kenya
               </li>
               <li className="flex items-center">
                 <PhoneIcon className="h-5 w-5 mr-3" /> +254 739443403
               </li>
               <li className="flex items-center">
-                    <EnvelopeIcon className="h-5 w-5 mr-3" />
-                    <span className="truncate">info@beatricecheronomellyfoundation.org</span>
-                </li>
+                <EnvelopeIcon className="h-5 w-5 mr-3" />
+                <span className="truncate">
+                  info@beatricecheronomellyfoundation.org
+                </span>
+              </li>
             </ul>
           </div>
 
           {/* Quick Links Section */}
           <div>
-            <h5 className="text-white text-lg font-semibold mb-4">Quick Links</h5>
+            <h5 className="text-white text-lg font-semibold mb-4">
+              Quick Links
+            </h5>
+
             <ul className="text-gray-400 space-y-2">
-              {[
-                "About Us",
-                "Contact Us",
-                "Our Services",
-                "Terms & Condition",
-                "Support",
-              ].map((link, index) => (
-                <li key={index} className="hover:text-purple-500 transition duration-300 cursor-pointer">
-                  ▶ {link}
+              {paths.map((link, index) => (
+                <li
+                  key={index}
+                  className="hover:text-purple-500 transition duration-300 cursor-pointer"
+                >
+                  ▶ <a href={link.path}>{link.name}</a>
                 </li>
               ))}
             </ul>
@@ -74,9 +92,13 @@ const Footer:React.FC = () => {
 
           {/* Newsletter Section */}
           <div>
-            <h5 className="text-white text-lg font-semibold mb-4">Newsletter</h5>
+            <h5 className="text-white text-lg font-semibold mb-4">
+              Newsletter
+            </h5>
             <p className="text-gray-400 mb-4">
-                Stay updated with our latest projects, success stories, and how you can make a difference. Subscribe to our newsletter today!            </p>
+              Stay updated with our latest projects, success stories, and how
+              you can make a difference. Subscribe to our newsletter today!{" "}
+            </p>
             <div className="flex">
               <input
                 type="text"
@@ -90,12 +112,17 @@ const Footer:React.FC = () => {
           </div>
         </div>
         {/* Copyright Section */}
-        <div className="border-t border-gray-600 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center text-gray-400 text-sm">            <div>
-                  &copy; Beatrice Cherono Melly Foundation, All Rights Reserved.
-            </div>
-            <div>
-                Designed by <a href="https://tevinly.com" className="hover:text-purple-500">Tevinly</a>
-            </div>
+        <div className="border-t border-gray-600 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center text-gray-400 text-sm">
+          {" "}
+          <div>
+            &copy; {new Date().getFullYear()} Beatrice Cherono Melly Foundation, All Rights Reserved.
+          </div>
+          <div>
+            Designed by{" "}
+            <a href="https://tevinly.com" className="hover:text-purple-500">
+              Tevinly
+            </a>
+          </div>
         </div>
       </div>
     </div>

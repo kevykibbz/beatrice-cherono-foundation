@@ -1,15 +1,28 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRightIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import TopBar from "../TopBar/Topbar";
 import SiteLogo from "./SiteLogo";
+import { PathTypes } from "@/types/types";
+
+
+const paths:PathTypes[]=[
+  { name: "Home", path: "/" },
+  { name: "About", path: "/about" },
+  { name: "Causes", path: "/causes" },
+  { name: "Services", path: "/services" },
+  { name: "Our Teams", path: "/teams" },
+  { name: "Contact", path: "/contact" },
+]
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const pathname = usePathname(); // Get the current active path
 
   // Listen for scroll events
   useEffect(() => {
@@ -26,9 +39,11 @@ const Navbar: React.FC = () => {
   }, []);
 
   return (
-    <div className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-      isScrolled ? "bg-dark bg-opacity-90 shadow-lg backdrop-blur-lg" : "bg-transparent"
-    }`}>
+    <div
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+        isScrolled ? "bg-dark bg-opacity-90 shadow-lg backdrop-blur-lg" : "bg-transparent"
+      }`}
+    >
       <TopBar />
 
       {/* Navbar */}
@@ -51,10 +66,17 @@ const Navbar: React.FC = () => {
 
         {/* Navbar Links (Desktop) */}
         <div className="hidden lg:flex items-center space-x-6">
-          <Link href="/" className="text-white hover:text-purple-500 transition duration-300">Home</Link>
-          <Link href="/about" className="text-white hover:text-purple-500 transition duration-300">About</Link>
-          <Link href="/causes" className="text-white hover:text-purple-500 transition duration-300">Causes</Link>
-          <Link href="/contact" className="text-white hover:text-purple-500 transition duration-300">Contact</Link>
+          {paths.map((link) => (
+            <Link
+              key={link.path}
+              href={link.path}
+              className={`transition duration-300 ${
+                pathname === link.path ? "text-purple-500 font-semibold" : "text-white hover:text-purple-500"
+              }`}
+            >
+              {link.name}
+            </Link>
+          ))}
         </div>
 
         {/* Donate Button (Desktop) */}
@@ -79,10 +101,17 @@ const Navbar: React.FC = () => {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="lg:hidden bg-[#0D1B1E] py-4 px-6 w-[90%] rounded-tr-2xl rounded-br-2xl shadow-lg"
           >
-            <Link href="/" className="block text-white hover:text-purple-500 py-2 transition duration-300">Home</Link>
-            <Link href="/about" className="block text-white hover:text-purple-500 py-2 transition duration-300">About</Link>
-            <Link href="/causes" className="block text-white hover:text-purple-500 py-2 transition duration-300">Causes</Link>
-            <Link href="/contact" className="block text-white hover:text-purple-500 py-2 transition duration-300">Contact</Link>
+            {paths.map((link) => (
+              <Link
+                key={link.path}
+                href={link.path}
+                className={`block py-2 transition duration-300 ${
+                  pathname === link.path ? "text-purple-500 font-semibold" : "text-white hover:text-purple-500"
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
           </motion.div>
         )}
       </AnimatePresence>
