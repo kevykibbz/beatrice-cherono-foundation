@@ -16,3 +16,18 @@ export interface SlideTypes {
   description: string;
   link: string;
 }
+
+export interface ServicesTypes {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+
+
+export interface TeamMembersTypes {
+  id: number;
+  name: string;
+  designation: string;
+  img:string;
+}

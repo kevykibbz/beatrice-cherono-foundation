@@ -15,7 +15,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
-    "swiper": "^11.2.5"
+    "swiper": "^11.2.5",
+    "wow.js": "^1.2.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

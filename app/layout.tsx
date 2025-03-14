@@ -5,6 +5,7 @@ import { Loading } from "./Loading";
 import "./globals.css";
 import Footer from "@/components/Footer/Footer";
 import Navbar from "@/components/Navbar/Navbar";
+import Head from "next/head";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -69,6 +70,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+       <Head>
+       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.5.2/animate.min.css"/>
+      </Head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <Suspense fallback={<Loading />}>
           <div className="min-h-screen flex flex-col">

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRightIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import TopBar from "../TopBar/Topbar";
@@ -9,13 +9,30 @@ import SiteLogo from "./SiteLogo";
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isScrolled, setIsScrolled] = useState<boolean>(false);
+
+  // Listen for scroll events
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <div className="fixed top-0 left-0 w-full bg-opacity-90 z-50">
+    <div className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+      isScrolled ? "bg-dark bg-opacity-90 shadow-lg backdrop-blur-lg" : "bg-transparent"
+    }`}>
       <TopBar />
 
       {/* Navbar */}
-      <nav className="py-4 px-6 lg:px-10 flex items-center justify-between bg-dark">
+      <nav className="py-4 px-6 lg:px-10 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
           <SiteLogo />

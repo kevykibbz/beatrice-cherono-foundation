@@ -1,8 +1,9 @@
-import { PageTypes } from '@/types/types';
-import React from 'react';
-import Link from 'next/link';
+import { PageTypes } from "@/types/types";
+import React from "react";
+import Link from "next/link";
+import { ChevronRightIcon } from "@heroicons/react/24/outline";
 
-const Header:React.FC<PageTypes> = ({title=''}) => {
+const Header: React.FC<PageTypes> = ({ title = "" }) => {
   return (
     <div className="page-header animate-fade-in animation-delay-100">
       <div className="container mx-auto text-center">
@@ -12,14 +13,26 @@ const Header:React.FC<PageTypes> = ({title=''}) => {
         <nav aria-label="breadcrumb" className="animate-slide-in-down">
           <ol className="flex justify-center space-x-2 mb-0">
             <li className="breadcrumb-item">
-              <Link href="/" className="text-white hover:text-primary transition duration-300">
+              <Link
+                href="/"
+                className="text-white hover:text-primary transition duration-300"
+              >
                 Home
               </Link>
             </li>
+            <li className="flex items-center">
+              <ChevronRightIcon className="h-4 w-4 text-white" />
+            </li>
             <li className="breadcrumb-item">
-              <Link href="#" className="text-white hover:text-primary transition duration-300">
+              <Link
+                href="#"
+                className="text-white hover:text-primary transition duration-300"
+              >
                 Pages
               </Link>
+            </li>
+            <li className="flex items-center">
+              <ChevronRightIcon className="h-4 w-4 text-white" />
             </li>
             <li className="breadcrumb-item text-purple-600" aria-current="page">
               {title}
