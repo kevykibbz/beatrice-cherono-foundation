@@ -51,7 +51,7 @@ const Navbar: React.FC = () => {
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
           <SiteLogo />
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="hidden sm:block text-2xl font-bold text-white">
             Beatrice Cherono <span className="text-purple-500">Melly</span> Foundation
           </h1>
         </Link>

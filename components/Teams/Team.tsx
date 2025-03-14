@@ -39,7 +39,7 @@ const Teams = (): JSX.Element => {
     <section className="py-16 bg-gray-100">
       <div className="container mx-auto text-center">
         <motion.div
-          className="inline-block rounded-full bg-purple-200 text-purple-600 px-4 py-1 text-sm font-semibold mb-3"
+          className="inline-block rounded-full bg-purple-200 text-purple-600 px-4 py-2 text-sm font-semibold mb-3"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -54,7 +54,7 @@ const Teams = (): JSX.Element => {
         >
           Let&apos;s Meet With Our Ordinary Soldiers
         </motion.h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 ml-2 mr-2">
           {teamMembers.map((member, index) => (
             <motion.div
               key={member.id}
@@ -70,7 +70,7 @@ const Teams = (): JSX.Element => {
                   alt={member.name}
                   width={300}
                   height={350}
-                  className="w-full h-60 object-cover"
+                  className="w-full h-100 object-cover"
                 />
                 {/* Social Icons Slide Up Effect */}
                 <div className="absolute bottom-0 left-0 right-0 flex justify-center space-x-3 py-2 bg-white bg-opacity-80 transform translate-y-full opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">

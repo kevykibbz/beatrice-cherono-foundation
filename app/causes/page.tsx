@@ -46,7 +46,7 @@ const CausesSection = (): JSX.Element => {
               className="bg-gray-100 border-t-4 border-purple-600 rounded-xl overflow-hidden shadow-lg flex flex-col h-full cursor-pointer"
             >
               <div className="text-center p-6">
-                <div className="inline-block bg-purple-600 text-white rounded-b-xl text-lg pb-1 px-4 mb-4">
+                <div className="relative -top-6 inline-block bg-purple-600 text-white rounded-b-xl text-lg pb-1 px-4 mb-4">
                   <small>{cause}</small>
                 </div>
                 <h5 className="text-xl font-semibold mb-3">
@@ -79,7 +79,7 @@ const CausesSection = (): JSX.Element => {
                   </div>
                 </div>
               </div>
-              <div className="relative mt-auto group w-full h-56">
+              <div className="relative mt-auto group w-full h-56 sm:mb-3">
                 <div className="absolute inset-0">
                   <Image
                     src={`/images/courses-${index + 1}.jpg`}

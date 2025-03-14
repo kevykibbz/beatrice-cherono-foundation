@@ -5,10 +5,10 @@ import { motion } from "framer-motion";
 import React from "react";
 
 export default function Contact() {
-    const fadeInUp = {
-        hidden: { opacity: 0, y: 50 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-      };
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+  };
   return (
     <React.Fragment>
       <Header title="Contact us" />
@@ -91,12 +91,14 @@ export default function Contact() {
                   Message
                 </label>
               </div>
-              <button className="bg-purple-500 text-white py-2 px-4 rounded flex items-center gap-2 hover:bg-purple-700 transition cursor-pointer">
-                Send Message
-                <span className="bg-white text-purple-600 p-2 rounded-full">
-                  <ChevronRightIcon className="w-5 h-5"/>
-                </span>
-              </button>
+              <div className="sm:flex sm:items-center sm:justify-center sm:h-screen">
+                <button className="bg-purple-500 text-white py-2 px-4 flex items-center gap-2 hover:bg-purple-700 transition cursor-pointer rounded-full sm:mx-auto">
+                  Send Message
+                  <span className="bg-white text-purple-600 p-2 rounded-full">
+                    <ChevronRightIcon className="w-5 h-5" />
+                  </span>
+                </button>
+              </div>
             </form>
           </motion.div>
 

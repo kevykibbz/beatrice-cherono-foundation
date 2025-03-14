@@ -115,7 +115,7 @@ const Donate = () => {
                   <div>
                     <button
                       type="submit"
-                      className="w-full h-16 px-5 bg-white text-purple-500 font-semibold rounded-md flex items-center justify-center gap-2 hover:bg-purple-500 transition duration-300 cursor-pointer hover:text-white group"
+                      className="w-full h-16 px-5 bg-white text-purple-500 font-semibold rounded-full flex items-center justify-center gap-2 hover:bg-purple-500 transition duration-300 cursor-pointer hover:text-white group"
                     >
                       Donate Now
                       <div className="w-8 h-8 bg-purple-500 text-white flex items-center justify-center rounded-full transition duration-300 group-hover:bg-white group-hover:text-purple-500">

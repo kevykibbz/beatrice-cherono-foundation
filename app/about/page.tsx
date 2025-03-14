@@ -98,7 +98,7 @@ export default function About() {
               className="flex gap-4"
             >
               <Link
-                className="flex items-center bg-purple-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-purple-600 transition"
+                className="flex items-center bg-purple-500 text-white py-2 px-4 rounded-full shadow-md hover:bg-purple-600 transition"
                 href="#"
               >
                 Learn More
@@ -108,7 +108,7 @@ export default function About() {
               </Link>
 
               <Link
-                className="flex items-center border border-purple-500 text-purple-500 py-2 px-4 rounded-lg shadow-md hover:bg-purple-500 hover:text-white transition"
+                className="flex items-center border border-purple-500 text-purple-500 py-2 px-4 rounded-full shadow-md hover:bg-purple-500 hover:text-white transition"
                 href="#"
               >
                 Contact Us
