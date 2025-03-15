@@ -31,7 +31,7 @@ export default function Services():JSX.Element {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-block bg-purple-500 text-white py-1 px-3 rounded-full mb-3"
+          className="inline-block bg-purple-500 text-white py-2 px-3 rounded-full mb-3"
         >
           What We Do
         </motion.div>

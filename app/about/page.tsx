@@ -50,7 +50,7 @@ export default function About() {
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
               viewport={{ once: true }}
-              className="inline-block bg-gray-200 text-purple-500 text-sm font-semibold py-1 px-3 rounded-full mb-3"
+              className="inline-block bg-gray-200 text-purple-500 text-sm font-semibold py-2 px-3 rounded-full mb-3"
             >
               About Us
             </motion.div>
@@ -109,7 +109,7 @@ export default function About() {
 
               <Link
                 className="flex items-center border border-purple-500 text-purple-500 py-2 px-4 rounded-full shadow-md hover:bg-purple-500 hover:text-white transition"
-                href="#"
+                href="/contact"
               >
                 Contact Us
                 <span className="ml-2 bg-purple-500 text-white p-1 rounded-full">

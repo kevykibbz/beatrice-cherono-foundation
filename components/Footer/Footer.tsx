@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  ChevronRightIcon,
   EnvelopeIcon,
   MapPinIcon,
   PhoneIcon,
@@ -82,9 +83,9 @@ const Footer: React.FC = () => {
               {paths.map((link, index) => (
                 <li
                   key={index}
-                  className="hover:text-purple-500 transition duration-300 cursor-pointer"
+                  className="hover:text-purple-500 transition flex duration-300 cursor-pointer"
                 >
-                  ▶ <a href={link.path}>{link.name}</a>
+                  <ChevronRightIcon className="w-5 h-5"/> <a href={link.path}>{link.name}</a>
                 </li>
               ))}
             </ul>

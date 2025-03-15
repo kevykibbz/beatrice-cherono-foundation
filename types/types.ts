@@ -1,9 +1,18 @@
+import Mail from "nodemailer/lib/mailer";
+
 export type LoaderTypes = {
   width?: number;
   height?: number;
+  color?:string;
   fullScreen?: boolean
 };
 
+
+export type LoaderProps = {
+  size?: number;
+  color?: string;
+  fullScreen?: boolean;
+};
 
 export type PageTypes={
   title?:string
@@ -43,4 +52,12 @@ export type TestimonialsTypes={
   profession:string
   image:string
   text:string
+}
+
+
+export type SendEmailTypes={
+  sender:Mail.Address;
+  recipients:Mail.Address[];
+  subject:string;
+  message:string
 }

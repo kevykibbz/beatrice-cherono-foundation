@@ -5,7 +5,7 @@ import React, { JSX } from 'react'
 export default function TeamsSection():JSX.Element {
   return (
     <React.Fragment>
-      <Header title="Our Teams" />
+      <Header title="Our Team" />
       <Teams/>
     </React.Fragment>
   )

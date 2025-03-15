@@ -3,12 +3,65 @@ import Header from "@/components/Header/Header";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
 import React from "react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { ContactFormInputs, contactFormSchema } from "@/schemas/ContactForm";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import DualRingLoader from "@/components/Loader/DualRingLoader";
+import toast  from 'react-hot-toast';
+
+
+
+
 
 export default function Contact() {
   const fadeInUp = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid, isSubmitting },
+    setError,
+    reset
+  } = useForm<ContactFormInputs>({
+    resolver: zodResolver(contactFormSchema),
+    mode: "onChange",
+  });
+
+  const onSubmit: SubmitHandler<ContactFormInputs> = async (data) => {
+    try {
+      const response = await fetch("/api/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit form");
+      }
+
+      const result = await response.json();
+      console.log(result)
+      toast.success('Message sent succesfully.');
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.success('Error sending message. Please try again later.');
+      setError("root", {
+        type: "manual",
+        message: "Failed to submit form. Please try again later.",
+      });
+    } finally {
+      reset();
+    }
+  };
+
   return (
     <React.Fragment>
       <Header title="Contact us" />
@@ -21,7 +74,7 @@ export default function Contact() {
             transition={{ duration: 0.5 }}
             variants={fadeInUp}
           >
-            <div className="inline-block rounded-full bg-gray-200 text-purple-700 py-1 px-3 mb-3">
+            <div className="inline-block rounded-full bg-gray-200 text-purple-700 py-2 px-3 mb-3">
               Contact Us
             </div>
             <h1 className="text-3xl font-bold mb-5">
@@ -33,70 +86,90 @@ export default function Contact() {
               soon as possible.
             </p>
 
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="relative">
-                  <input
-                    type="text"
+                  <Input
                     id="name"
-                    placeholder=" "
-                    className="peer w-full p-3 border rounded focus:outline-none focus:ring focus:ring-purple-300"
-                  />
-                  <label
-                    htmlFor="name"
-                    className="absolute left-3 top-3 text-gray-500 text-sm peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 transition-all"
-                  >
-                    Your Name
-                  </label>
+                    placeholder="Your name"
+                    {...register("name")}
+                    className="!h-15 !border !border-gray-300 focus:!ring-2 focus:!ring-purple-500"
+                  />{" "}
+                  {errors.name && (
+                    <small className="flex mt-2 text-red-500 text-sm ">
+                      <ExclamationCircleIcon className="w-4 h-4 mr-1" />
+                      {errors.name?.message}
+                    </small>
+                  )}
                 </div>
                 <div className="relative">
-                  <input
-                    type="email"
+                  <Input
                     id="email"
-                    placeholder=" "
-                    className="peer w-full p-3 border rounded focus:outline-none focus:ring focus:ring-purple-300"
-                  />
-                  <label
-                    htmlFor="email"
-                    className="absolute left-3 top-3 text-gray-500 text-sm peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 transition-all"
-                  >
-                    Your Email
-                  </label>
+                    type="email"
+                    {...register("email")}
+                    placeholder="Your email address"
+                    className="!h-15 !border !border-gray-300 focus:!ring-2 focus:!ring-purple-500"
+                  />{" "}
+                  {errors.email && (
+                    <small className="flex mt-2 text-red-500 text-sm ">
+                      <ExclamationCircleIcon className="w-4 h-4 mr-1" />
+                      {errors.email?.message}
+                    </small>
+                  )}
                 </div>
               </div>
               <div className="relative">
-                <input
-                  type="text"
+                <Input
                   id="subject"
-                  placeholder=" "
-                  className="peer w-full p-3 border rounded focus:outline-none focus:ring focus:ring-purple-300"
-                />
-                <label
-                  htmlFor="subject"
-                  className="absolute left-3 top-3 text-gray-500 text-sm peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 transition-all"
-                >
-                  Subject
-                </label>
+                  placeholder="Subject"
+                  {...register("subject")}
+                  className="!h-15 !border !border-gray-300 focus:!ring-2 focus:!ring-purple-500"
+                />{" "}
+                {errors.subject && (
+                  <small className="flex mt-2 text-red-500 text-sm ">
+                    <ExclamationCircleIcon className="w-4 h-4 mr-1" />
+                    {errors.subject?.message}
+                  </small>
+                )}
               </div>
               <div className="relative">
-                <textarea
+                <Textarea
                   id="message"
-                  placeholder=" "
-                  className="peer w-full p-3 border rounded h-24 focus:outline-none focus:ring focus:ring-purple-300"
-                ></textarea>
-                <label
-                  htmlFor="message"
-                  className="absolute left-3 top-3 text-gray-500 text-sm peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 transition-all"
-                >
-                  Message
-                </label>
+                  cols={5}
+                  placeholder="Message"
+                  {...register("message")}
+                  className="!h-32 !border !border-gray-300 focus:!ring-2 focus:!ring-purple-500"
+                />{" "}
+                {errors.message && (
+                  <small className="flex mt-2 text-red-500 text-sm ">
+                    <ExclamationCircleIcon className="w-4 h-4 mr-1" />
+                    {errors.message?.message}
+                  </small>
+                )}
               </div>
-              <div className="sm:flex sm:items-center sm:justify-center sm:h-screen">
-                <button className="bg-purple-500 text-white py-2 px-4 flex items-center gap-2 hover:bg-purple-700 transition cursor-pointer rounded-full sm:mx-auto">
-                  Send Message
-                  <span className="bg-white text-purple-600 p-2 rounded-full">
-                    <ChevronRightIcon className="w-5 h-5" />
-                  </span>
+              <div className="sm:flex sm:items-center sm:justify-center">
+                <button
+                  type="submit"
+                  disabled={!isValid || isSubmitting}
+                  className={`bg-purple-500   border-purple-500 text-white py-2 px-4 flex items-center gap-2 hover:bg-purple-700 transition cursor-pointer rounded-full sm:mx-auto ${
+                    !isValid || isSubmitting
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                >
+                  {isSubmitting ? (
+                    <div className="flex items-center gap-2">
+                      <DualRingLoader size={30} color="#ffffff" />
+                      Sending...
+                    </div>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      Send Message
+                      <span className="bg-white text-purple-600 p-2 rounded-full">
+                        <ChevronRightIcon className="w-5 h-5" />
+                      </span>
+                    </span>
+                  )}
                 </button>
               </div>
             </form>
