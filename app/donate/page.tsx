@@ -3,6 +3,7 @@ import Header from "@/components/Header/Header";
 import { motion } from "framer-motion";
 import React, { useState } from "react";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
+import { Input } from "@/components/ui/input";
 
 const Donate = () => {
   const fadeInUp = {
@@ -55,13 +56,12 @@ const Donate = () => {
                     >
                       Your Name
                     </label>
-                    <input
-                      type="text"
-                      id="name"
-                      className="w-full px-4 py-3 bg-white border-0 rounded-md focus:outline-none"
-                      placeholder="Your Name"
-                    />
                   </div>
+                  <Input
+                    id="name"
+                    placeholder="Your name"
+                    className="!h-15 !border !border-gray-300 focus:!ring-2 focus:!ring-purple-500"
+                  />{" "}
                   <div>
                     <label
                       htmlFor="email"
@@ -69,12 +69,12 @@ const Donate = () => {
                     >
                       Your Email
                     </label>
-                    <input
-                      type="email"
+                    <Input
                       id="email"
-                      className="w-full px-4 py-3 bg-white border-0 rounded-md focus:outline-none"
-                      placeholder="Your Email"
-                    />
+                      type="email"
+                      placeholder="Your email address"
+                      className="!h-15 !border !border-gray-300 focus:!ring-2 focus:!ring-purple-500"
+                    />{" "}
                   </div>
                   <div>
                     <label className="block text-sm font-medium  mb-2">
@@ -84,7 +84,7 @@ const Donate = () => {
                       <div className="inline-flex w-full">
                         {[10, 20, 30].map((amount, index, arr) => (
                           <div key={amount} className="flex-1">
-                            <input
+                            <Input
                               type="radio"
                               id={`btnradio${amount}`}
                               name="btnradio"
@@ -94,11 +94,11 @@ const Donate = () => {
                             />
                             <label
                               htmlFor={`btnradio${amount}`}
-                              className={`block text-center cursor-pointer py-3 px-6 bg-white text-purple-500 font-semibold transition duration-300 border-2 w-full
+                              className={`!h-15 block text-center cursor-pointer py-3 px-6 bg-white text-purple-500 font-semibold transition duration-300 border-2 w-full
                 border-gray-100 
                 ${
                   selectedAmount === amount
-                    ? "border-purple-500" 
+                    ? "border-purple-500"
                     : "hover:border-purple-500"
                 }
                 ${index === 0 ? "rounded-l-md" : ""}
