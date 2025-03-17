@@ -7,6 +7,7 @@ import Footer from "@/components/Footer/Footer";
 import Navbar from "@/components/Navbar/Navbar";
 import Head from "next/head";
 import { Toaster } from 'react-hot-toast';
+import Consent from "@/components/CookieConsent/Consent";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -79,6 +80,7 @@ export default function RootLayout({
           <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-grow">{children}</main>
+            <Consent/>
             <Footer />
           </div>
           <Toaster />

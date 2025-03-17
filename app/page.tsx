@@ -18,7 +18,10 @@ export default function Home(): JSX.Element {
         className="relative bg-[rgba(0,29,35,0.8)] bg-cover bg-center"
         style={{ backgroundImage: "url('/images/carousel-2.jpg')" }}
       >
-        <DonateSection isDonatePage={false}/>
+        <div className="absolute inset-0 bg-[rgba(0,29,35,0.8)]"></div>
+        <div className="relative z-10">
+          <DonateSection isDonatePage={false} />
+        </div>{" "}
       </div>
 
       {/* Teams section */}
