@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar/Navbar";
 import Head from "next/head";
 import { Toaster } from 'react-hot-toast';
 import Consent from "@/components/CookieConsent/Consent";
+import Script from "next/script";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -85,6 +86,11 @@ export default function RootLayout({
           </div>
           <Toaster />
         </Suspense>
+        {/* Tidio Live Chat Script */}
+        <Script
+          src="//code.tidio.co/yijtlq2xmcygrfhxlr5u7s30so7kl1w9.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
