@@ -54,7 +54,7 @@ export default function Slider() {
   const [items, setItems] = useState<SlideTypes[]>(initialItems);
   const [progress, setProgress] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const duration = 5000;
+  const duration = 6000;
   const totalItems = items.length;
   const radius = 30;
   const circumference = 2 * Math.PI * radius;
@@ -90,19 +90,20 @@ export default function Slider() {
 
   useEffect(() => {
     if (totalItems > 2) {
-      const interval = setInterval(nextSlide, duration);
-      return () => clearInterval(interval);
-    }
-  }, [items,totalItems]);
-
-  useEffect(() => {
-    if (totalItems > 2) {
       const interval = setInterval(() => {
-        setProgress((prev) => (prev >= 100 ? 0 : prev + 1));
-      }, duration / 100);
+        setProgress((prev) => {
+          if (prev <= 0) {
+            nextSlide(); // Move to the next slide when progress reaches 0
+            return 100; // Reset progress
+          }
+          return prev - 1; // Countdown the progress
+        });
+      }, duration / 100); // Smoothly decrease progress over time
+  
       return () => clearInterval(interval);
     }
   }, [totalItems]);
+  
   return (
     <div className="w-full h-screen overflow-hidden relative">
       {/* Background Images */}
@@ -270,6 +271,7 @@ export default function Slider() {
               r="25"
               cx="30"
               cy="30"
+              transform="rotate(-90,30,30)"
             />
           </svg>
           {/* Next Button Inside */}

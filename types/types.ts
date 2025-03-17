@@ -61,3 +61,8 @@ export type SendEmailTypes={
   subject:string;
   message:string
 }
+
+
+export type DonatePageTypes={
+  isDonatePage?:boolean;
+}

@@ -34,7 +34,7 @@ const teamMembers: TeamMembersTypes[] = [
   },
 ];
 
-const Teams = (): JSX.Element => {
+const TeamsSection = (): JSX.Element => {
   return (
     <section className="py-16 bg-gray-100">
       <div className="container mx-auto text-center">
@@ -106,4 +106,4 @@ const Teams = (): JSX.Element => {
   );
 };
 
-export default Teams;
+export default TeamsSection;

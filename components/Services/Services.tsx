@@ -23,7 +23,7 @@ const services:ServicesTypes[] = [
   },
 ];
 
-export default function Services():JSX.Element {
+export default function ServicesSection():JSX.Element {
   return (
     <div className="py-16 bg-gray-100">
       <div className="max-w-5xl mx-auto text-center mb-10">

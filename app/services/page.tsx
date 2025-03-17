@@ -1,12 +1,12 @@
 import Header from '@/components/Header/Header'
 import React from 'react'
-import Services from '@/components/Services/Services'
+import ServicesSection from '@/components/Services/Services'
 
-export default function ServicesSection() {
+export default function Services() {
   return (
     <React.Fragment>
       <Header title='Services'/>
-      <Services/>
+      <ServicesSection/>
     </React.Fragment>
   )
 }

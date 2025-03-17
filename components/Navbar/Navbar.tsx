@@ -31,7 +31,7 @@ const Navbar: React.FC = () => {
   return (
     <React.Fragment>
       <TopBar />
-      <header className="bg-white">
+      <header className="bg-white z-[120]">
         <nav className="flex justify-between items-center mx-auto w-[98%]">
           {/* Logo remains at the start */}
           <div className="flex gap-2 items-center">
