@@ -179,3 +179,15 @@ body {
 }
 
 
+@keyframes progress-timer {
+  from {
+    --progress: 0%;
+  }
+  to {
+    --progress: 100%;
+  }
+}
+
+.animate-progress-timer {
+  animation: progress-timer 5s linear forwards;
+}

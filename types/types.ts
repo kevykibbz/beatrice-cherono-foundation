@@ -28,7 +28,7 @@ export interface SlideTypes {
   image: string;
   title: string;
   description: string;
-  link: string;
+  link?: string;
 }
 
 export interface ServicesTypes {

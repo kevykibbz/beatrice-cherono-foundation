@@ -30,7 +30,7 @@ const TopBar = (): JSX.Element => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="hidden lg:flex justify-between items-center px-10 border-b border-gray-600 text-white/50 shadow-md py-4 fixed top-0 w-full z-50 backdrop-blur-sm bg-black/50"
+          className="hidden lg:flex justify-between items-center px-10 border-b border-gray-600 text-white/50 shadow-md py-4 fixed top-0 w-full z-100 backdrop-blur-sm bg-black/50"
         >
           <div className="hidden lg:flex space-x-6">
             <small>
