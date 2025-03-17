@@ -9,6 +9,7 @@ import Head from "next/head";
 import { Toaster } from 'react-hot-toast';
 import Consent from "@/components/CookieConsent/Consent";
 import Script from "next/script";
+import BackToTop from "@/components/BackToTop/ToTop";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -81,6 +82,7 @@ export default function RootLayout({
           <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-grow">{children}</main>
+            <BackToTop/>
             <Consent/>
             <Footer />
           </div>
