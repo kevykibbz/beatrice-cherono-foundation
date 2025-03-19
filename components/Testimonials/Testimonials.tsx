@@ -96,10 +96,10 @@ export default function TestimonialsSection() {
         </div>
         <p className="text-gray-700 text-lg leading-relaxed max-w-3xl mx-auto mb-3 text-center px-6">
           At our NGO, we strive to make a real difference in communities
-          worldwide. Hear from those who have worked alongside us—whether it&apos;s
-          volunteers dedicating their time, businesses collaborating on social
-          impact projects, or beneficiaries whose lives have changed. Their
-          experiences showcase the power of collective action in creating
+          worldwide. Hear from those who have worked alongside us—whether
+          it&apos;s volunteers dedicating their time, businesses collaborating
+          on social impact projects, or beneficiaries whose lives have changed.
+          Their experiences showcase the power of collective action in creating
           meaningful change.
         </p>
         <div className="content">
@@ -212,8 +212,10 @@ export default function TestimonialsSection() {
               {users.map((_, index) => (
                 <button
                   key={index}
-                  className={`cursor-pointer w-3 h-3 rounded-full transition-all duration-300 ${
-                    selectedIndex === index ? "bg-purple-500" : "bg-gray-300"
+                  className={`cursor-pointer w-3 h-3 rounded-full transition-all duration-300 shadow-md ${
+                    selectedIndex === index
+                      ? "bg-purple-500 shadow-purple-500/50 scale-110"
+                      : "bg-gray-300 shadow-gray-400/50 hover:shadow-lg"
                   }`}
                   onClick={() => setSelectedIndex(index)}
                 />
