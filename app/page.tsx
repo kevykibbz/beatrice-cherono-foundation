@@ -4,6 +4,7 @@ import DonateSection from "@/components/Donate/DonateSection";
 import ServicesSection from "@/components/Services/Services";
 import Carousel from "@/components/Swiper/Carousel";
 import TeamsSection from "@/components/Teams/Team";
+import TestimonialsSection from "@/components/Testimonials/Testimonials";
 import { JSX } from "react";
 
 export default function Home(): JSX.Element {
@@ -23,7 +24,7 @@ export default function Home(): JSX.Element {
         </div>{" "}
       </div>
       <TeamsSection />
-      {/* Testimonials Section */}
+      <TestimonialsSection/>
     </>
   );
 }
