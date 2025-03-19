@@ -147,11 +147,11 @@ export default function Contact() {
                   </small>
                 )}
               </div>
-              <div className="sm:flex sm:items-center sm:justify-center">
+              <div className="flex sm:justify-start items-center justify-center">
                 <button
                   type="submit"
                   disabled={!isValid || isSubmitting}
-                  className={`bg-purple-500   border-purple-500 text-white py-2 px-4 flex items-center gap-2 hover:bg-purple-700 transition cursor-pointer rounded-full sm:mx-auto ${
+                  className={`bg-purple-500  justify-center  border-purple-500 text-white py-2 px-4 flex items-center gap-2 hover:bg-purple-700 transition cursor-pointer rounded-full sm:mx-auto ${
                     !isValid || isSubmitting
                       ? "opacity-50 cursor-not-allowed"
                       : ""

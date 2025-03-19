@@ -90,7 +90,7 @@ export default function RootLayout({
         </Suspense>
         {/* Tidio Live Chat Script */}
         <Script
-          src="//code.tidio.co/yijtlq2xmcygrfhxlr5u7s30so7kl1w9.js"
+          src="//code.tidio.co/2wjfpiet8z2408ksic4atu8nnvcvw8rr.js"
           strategy="afterInteractive"
         />
       </body>

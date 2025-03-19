@@ -48,10 +48,11 @@ export interface TeamMembersTypes {
 
 
 export type TestimonialsTypes={
+  id?:number
   name:string
-  profession:string
-  image:string
-  text:string
+  role:string
+  img:string
+  testimonial:string;
 }
 
 

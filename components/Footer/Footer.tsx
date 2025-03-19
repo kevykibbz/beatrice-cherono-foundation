@@ -104,9 +104,9 @@ const Footer: React.FC = () => {
               <input
                 type="text"
                 placeholder="Your email"
-                className="bg-transparent border border-purple-500 text-gray-400 px-4 py-2 flex-1 outline-none"
+                className="rounded-bl-full rounded-tl-full bg-transparent border border-purple-500 text-gray-400 px-4 py-2 flex-1 outline-none"
               />
-              <button className="bg-purple-600 text-white px-5 py-2 font-semibold hover:bg-purple-600 transition duration-300">
+              <button className="bg-purple-600 rounded-br-full rounded-tr-full text-white px-5 py-2 font-semibold hover:bg-purple-600 transition duration-300">
                 SignUp
               </button>
             </div>

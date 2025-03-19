@@ -9,11 +9,10 @@ import { JSX } from "react";
 export default function Home(): JSX.Element {
   return (
     <>
-      <Carousel />
+      {/* <Carousel/> */}
       <AboutSection />
       <CausesSection />
       <ServicesSection />
-      {/* Donate section */}
       <div
         className="relative bg-[rgba(0,29,35,0.8)] bg-cover bg-center"
         style={{ backgroundImage: "url('/images/carousel-2.jpg')" }}
@@ -23,8 +22,6 @@ export default function Home(): JSX.Element {
           <DonateSection isDonatePage={false} />
         </div>{" "}
       </div>
-
-      {/* Teams section */}
       <TeamsSection />
       {/* Testimonials Section */}
     </>

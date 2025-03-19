@@ -19,8 +19,8 @@ export default function AboutSection():JSX.Element {
             <Image
               src="/images/about-1.jpg"
               alt="Main Image"
-              layout="fill"
-              objectFit="cover"
+              fill 
+              style={{ objectFit: "cover" }} 
               className="rounded-lg"
             />
             <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-white p-2">
@@ -90,7 +90,7 @@ export default function AboutSection():JSX.Element {
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.3 }}
               viewport={{ once: true }}
-              className="flex gap-4"
+              className="flex gap-4 justify-center sm:justify-start"
             >
               <Link
                 className="flex items-center bg-purple-500 text-white py-2 px-4 rounded-full shadow-md hover:bg-purple-600 transition"

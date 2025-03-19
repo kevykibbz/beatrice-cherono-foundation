@@ -138,7 +138,7 @@ export default function Slider() {
                 onError={() => setIsLoading(false)} // Handle errors
               />
               {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-transparent/50"></div>
 
               {/* Text Description */}
               <div className="absolute top-1/2 left-[36px] md:left-[100px] -translate-y-1/2 w-[80%] max-w-[600px] text-white">
@@ -146,7 +146,7 @@ export default function Slider() {
                   initial={{ opacity: 0, x: -50 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, ease: "easeOut" }}
-                  className="text-5xl font-bold"
+                  className="text-3xl md:text-4xl lg:text-5xl font-bold"
                 >
                   {items[0].title}
                 </motion.h1>
@@ -155,7 +155,7 @@ export default function Slider() {
                   initial={{ opacity: 0, x: -50 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
-                  className="mt-3 text-lg"
+                  className="mt-3 text-sm md:text-lg lg:text-lg"
                 >
                   {items[0].description}
                 </motion.p>
@@ -168,9 +168,9 @@ export default function Slider() {
                   >
                     <Link
                       href={items[0].link}
-                      className="mt-4 inline-flex items-center px-4 py-2 border-2 border-purple-500 rounded-full transition duration-200 hover:bg-purple-500"
+                      className="text-sm md:text-lg lg:text-lg mt-4 inline-flex items-center px-4 py-2 border-2 border-purple-500 rounded-full transition duration-200 hover:bg-purple-500"
                     >
-                      See More <ChevronRightIcon className="ml-2 w-5 h-5" />
+                      See More <ChevronRightIcon className="ml-2 w-5 h-5 sm:w-4 sm:h-4" />
                     </Link>
                   </motion.div>
                 )}
@@ -186,7 +186,10 @@ export default function Slider() {
       <div>
         <AnimatePresence>
           {items.slice(1).map((item, idx) => {
-            const leftOffset = `calc(68% + ${idx * 200}px)`;
+            const leftOffset = `calc(68% + ${idx * 100}px)`;
+            // const leftOffset = `calc(${68 - idx * 10}% + ${idx * 20}px)`; // Adjusted calculation
+            // const leftOffset = `calc(68% + ${idx * 20}px)`; // Adjusted calculation
+
             const scale = idx === 0 ? 1 : 0.9; // Active item slightly larger
             const opacity = idx === 0 ? 1 : idx > 0 ? 0.7 : 0; // Active item full opacity, others reduced
 
@@ -241,7 +244,7 @@ export default function Slider() {
         : "cursor-pointer bg-purple-500 text-white border-purple-500 hover:bg-white hover:text-purple-500"
     }`}
         >
-          <ChevronLeftIcon className="w-5 h-5" />
+          <ChevronLeftIcon className="w-5 h-5 sm:w-4 sm:h-4" />
         </motion.button>
 
         {/* Circular Progress with Next Button Inside */}
@@ -288,7 +291,7 @@ export default function Slider() {
         : "cursor-pointer bg-purple-500 text-white border-purple-500 hover:bg-white hover:text-purple-500"
     }`}
           >
-            <ChevronRightIcon className="w-5 h-5" />
+            <ChevronRightIcon className="w-5 h-5 sm:w-4 sm:h-4" />
           </motion.button>
         </div>
       </motion.div>

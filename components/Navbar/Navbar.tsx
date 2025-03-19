@@ -26,23 +26,21 @@ const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const pathname = usePathname(); // Get the current active path
 
-  
 
   return (
     <React.Fragment>
       <TopBar />
       <header className="bg-white z-[120]">
         <nav className="flex justify-between items-center mx-auto w-[98%]">
-          {/* Logo remains at the start */}
+          {/* Logo */}
           <div className="flex gap-2 items-center">
             <SiteLogo />
-            <h1 className="hidden lg:block text-2xl font-bold">
-              Beatrice Cherono <span className="text-purple-500">Melly</span>{" "}
-              Foundation
+            <h1 className="hidden lg:block text-sm md:text-lg lg:text-lg font-bold">
+              Beatrice Cherono <span className="text-purple-500">Melly</span> Foundation
             </h1>
           </div>
 
-          {/* Nav Links and Donate Button aligned to the end */}
+          {/* Nav Links & Donate Button */}
           <div className="flex justify-end items-center gap-6">
             <div
               className={`md:static absolute bg-white md:min-h-fit min-h-[38vh] left-0
@@ -54,11 +52,12 @@ const Navbar: React.FC = () => {
                   : "top-[-100%] opacity-0 translate-y-[-100%] delay-100 md:opacity-100 md:translate-y-0 md:top-auto"
               }`}
             >
-              <ul className="flex md:flex-row flex-col md:items-center md:gap-[4vh] gap-8">
+              <ul className="flex md:flex-row flex-col md:items-center md:gap-[4vh] gap-6 text-base md:text-lg lg:text-xl">
                 {paths.map((link, index) => (
                   <li key={index}>
                     <Link
                       href={link.path}
+                      onClick={()=>setIsMenuOpen(false)}
                       className={`transition duration-300 ${
                         pathname === link.path
                           ? "text-purple-500 font-semibold"
@@ -76,7 +75,7 @@ const Navbar: React.FC = () => {
             {/* Donate Button */}
             <Link
               href="/donate"
-              className="flex items-center border border-purple-500 text-purple-600 px-4 py-2 rounded-full hover:bg-purple-500 hover:text-white transition duration-300"
+              className="flex items-center border border-purple-500 text-sm md:text-base lg:text-lg text-purple-600 px-4 py-2 rounded-full hover:bg-purple-500 hover:text-white transition duration-300"
             >
               Donate Now
               <span className="ml-2 flex items-center justify-center w-6 h-6 bg-purple-500 text-white rounded-full">
@@ -86,7 +85,7 @@ const Navbar: React.FC = () => {
 
             {/* Mobile Menu Button */}
             <button
-              className="lg:hidden text-white p-2 hover:text-purple-500 transition duration-300"
+              className="md:hidden text-white p-2 hover:text-purple-500 transition duration-300"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? (
