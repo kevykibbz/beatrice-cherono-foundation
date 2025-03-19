@@ -96,7 +96,7 @@ export default function TestimonialsSection() {
         </div>
         <p className="text-gray-700 text-lg leading-relaxed max-w-3xl mx-auto mb-3 text-center px-6">
           At our NGO, we strive to make a real difference in communities
-          worldwide. Hear from those who have worked alongside us—whether it's
+          worldwide. Hear from those who have worked alongside us—whether it&apos;s
           volunteers dedicating their time, businesses collaborating on social
           impact projects, or beneficiaries whose lives have changed. Their
           experiences showcase the power of collective action in creating
