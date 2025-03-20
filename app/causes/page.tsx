@@ -1,7 +1,7 @@
 import Header from "@/components/Header/Header";
 import React from "react";
 import { JSX } from "react";
-import CausesSection from "@/components/Causes/CausesSection";
+import CausesSection from "@/components/CausesSection/CausesSection";
 
 const Causes = (): JSX.Element => {
   return (

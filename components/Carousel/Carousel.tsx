@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, JSX } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { SlideTypes } from "@/types/types";
@@ -50,7 +50,7 @@ const initialItems: SlideTypes[] = [
   },
 ];
 
-export default function Slider() {
+const Carousel=():JSX.Element=>{
   const [items, setItems] = useState<SlideTypes[]>(initialItems);
   const [progress, setProgress] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -186,7 +186,7 @@ export default function Slider() {
       <div>
         <AnimatePresence>
           {items.slice(1).map((item, idx) => {
-            const leftOffset = `calc(68% + ${idx * 100}px)`;
+            const leftOffset = `calc(68% + ${idx * 200}px)`;
             // const leftOffset = `calc(${68 - idx * 10}% + ${idx * 20}px)`; // Adjusted calculation
             // const leftOffset = `calc(68% + ${idx * 20}px)`; // Adjusted calculation
 
@@ -299,3 +299,5 @@ export default function Slider() {
     </div>
   );
 }
+
+export default Carousel

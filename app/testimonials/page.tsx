@@ -1,6 +1,6 @@
 import Header from '@/components/Header/Header';
 import React, { JSX } from 'react';
-import TestimonialsSection from '@/components/Testimonials/Testimonials';
+import TestimonialsSection from '@/components/TestimonialsSection/TestimonialsSection';
 
 
 

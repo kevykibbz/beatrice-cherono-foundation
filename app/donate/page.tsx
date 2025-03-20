@@ -1,6 +1,6 @@
 import Header from "@/components/Header/Header";
 import React from "react";
-import DonateSection from "@/components/Donate/DonateSection";
+import DonateSection from "@/components/DonateSection/DonateSection";
 
 const Donate = () => {
   return (

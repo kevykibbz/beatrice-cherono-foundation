@@ -26,8 +26,8 @@ const services:ServicesTypes[] = [
 export default function ServicesSection():JSX.Element {
   return (
     <div className="py-16 bg-gray-100">
-      <div className="max-w-5xl mx-auto text-center mb-10">
-        <motion.div
+<div className="max-w-5xl mx-auto text-center mb-10 mt-0 sm:mt-40">
+<motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}

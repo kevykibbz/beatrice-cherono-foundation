@@ -1,6 +1,6 @@
 import Header from '@/components/Header/Header'
 import React from 'react'
-import ServicesSection from '@/components/Services/Services'
+import ServicesSection from '@/components/ServicesSection/ServicesSection'
 
 export default function Services() {
   return (
