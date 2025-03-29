@@ -85,28 +85,33 @@ const Footer: React.FC = () => {
                   key={index}
                   className="hover:text-purple-500 transition flex duration-300 cursor-pointer"
                 >
-                  <ChevronRightIcon className="w-5 h-5"/> <a href={link.path}>{link.name}</a>
+                  <ChevronRightIcon className="w-5 h-5" />{" "}
+                  <a href={link.path}>{link.name}</a>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* Newsletter Section */}
-          <div>
+          <div className="w-full max-w-md mx-auto">
             <h5 className="text-white text-lg font-semibold mb-4">
               Newsletter
             </h5>
             <p className="text-gray-400 mb-4">
               Stay updated with our latest projects, success stories, and how
-              you can make a difference. Subscribe to our newsletter today!{" "}
+              you can make a difference. Subscribe to our newsletter today!
             </p>
-            <div className="flex">
+            <div className="flex w-full">
               <input
-                type="text"
+                type="email"
                 placeholder="Your email"
-                className="rounded-bl-full rounded-tl-full bg-transparent border border-purple-500 text-gray-400 px-4 py-2 flex-1 outline-none"
+                className="w-full rounded-l-full bg-transparent border border-purple-500 text-gray-400 px-4 py-2 outline-none focus:border-purple-300"
               />
-              <button className="opacity-50 pointer-events-none bg-purple-600 rounded-br-full rounded-tr-full text-white px-5 py-2 font-semibold hover:bg-purple-600 transition duration-300">
+              <button
+                className="bg-purple-600 rounded-r-full text-white px-5 py-2 font-semibold hover:bg-purple-700 transition duration-300 whitespace-nowrap"
+                disabled
+                aria-label="Subscribe to newsletter"
+              >
                 Subscribe
               </button>
             </div>
@@ -116,7 +121,8 @@ const Footer: React.FC = () => {
         <div className="border-t border-gray-600 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center text-gray-400 text-sm">
           {" "}
           <div>
-            &copy; {new Date().getFullYear()} Beatrice Cherono Melly Foundation, All Rights Reserved.
+            &copy; {new Date().getFullYear()} Beatrice Cherono Melly Foundation,
+            All Rights Reserved.
           </div>
           <div>
             Designed by{" "}
