@@ -311,6 +311,7 @@ const Carousel = (): JSX.Element => {
       {/* Foreground Items with nth-child spacing ends*/}
 
       {/* Next/Prev Buttons */}
+      {/* Next/Prev Buttons  Ends*/}
     </div>
   );
 };
