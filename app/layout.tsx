@@ -5,8 +5,7 @@ import { Loading } from "./Loading";
 import "./globals.css";
 import Footer from "@/components/Footer/Footer";
 import Navbar from "@/components/Navbar/Navbar";
-import Head from "next/head";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 import Consent from "@/components/CookieConsent/Consent";
 import Script from "next/script";
 import BackToTop from "@/components/BackToTop/ToTop";
@@ -49,7 +48,7 @@ export const metadata: Metadata = {
     siteName: "Beatrice Cherono Melly Foundation",
     images: [
       {
-        url: "/images/site-image.jpg", 
+        url: "/images/site-image.jpg",
         width: 1200,
         height: 630,
         alt: "Beatrice Cherono Melly Foundation",
@@ -63,7 +62,7 @@ export const metadata: Metadata = {
     title: "Beatrice Cherono Melly Foundation",
     description:
       "Empowering communities through education, healthcare, environmental conservation, and women empowerment. Join us in making a difference in Kenya.",
-    images: ["/images/site-image.jpg"], 
+    images: ["/images/site-image.jpg"],
   },
 };
 
@@ -74,16 +73,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-       <Head>
-       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.5.2/animate.min.css"/>
-      </Head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <Suspense fallback={<Loading />}>
           <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-grow">{children}</main>
-            <BackToTop/>
-            <Consent/>
+            <BackToTop />
+            <Consent />
             <Footer />
           </div>
           <Toaster />
