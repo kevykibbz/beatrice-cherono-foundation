@@ -52,7 +52,7 @@ const initialItems: SlideTypes[] = [
 ];
 
 const Carousel = (): JSX.Element => {
-  const { width: windowWidth } = useWindowSize(); // Get window width
+  const { width: windowWidth } = useWindowSize();
   const isSmallScreen = windowWidth < 768;
   const isMediumScreen = windowWidth >= 768 && windowWidth < 1024;
   const [items, setItems] = useState<SlideTypes[]>(initialItems);
@@ -79,10 +79,12 @@ const Carousel = (): JSX.Element => {
     setItems((prevItems) => {
       if (typeof targetIndex === "number") {
         const clickedItem = prevItems[targetIndex];
-        const remainingItems = prevItems.filter((_, idx) => idx !== targetIndex);
+        const remainingItems = prevItems.filter(
+          (_, idx) => idx !== targetIndex
+        );
         return [clickedItem, ...remainingItems];
       } else {
-        return [prevItems[1], ...prevItems.slice(2), prevItems[0],];
+        return [prevItems[1], ...prevItems.slice(2), prevItems[0]];
       }
     });
 
@@ -309,78 +311,6 @@ const Carousel = (): JSX.Element => {
       {/* Foreground Items with nth-child spacing ends*/}
 
       {/* Next/Prev Buttons */}
-      <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="absolute top-[82%] md:top-[85%] lg:top-[85%] right-[52%] z-[100] w-[300px] max-w-[30%] flex items-center gap-4"
-      >
-        {/* Previous Button */}
-        <motion.button
-          whileHover={totalItems > 2 ? { scale: 1.1 } : {}}
-          onClick={prevSlide}
-          disabled={totalItems < 2}
-          whileTap={totalItems > 2 ? { scale: 0.9 } : {}}
-          className={`flex justify-center items-center w-[50px] h-[50px] rounded-full 
-    font-bold border transition duration-500 
-    ${
-      totalItems < 2
-        ? "cursor-not-allowed bg-gray-400 text-gray-200 border-gray-400" // Disabled styles
-        : "cursor-pointer bg-purple-500 text-white border-purple-500 hover:bg-white hover:text-purple-500"
-    }`}
-        >
-          <ChevronLeftIcon className="w-5 h-5 sm:w-4 sm:h-4" />
-        </motion.button>
-
-        {/* Circular Progress with Next Button Inside */}
-        <div className="relative flex items-center justify-center w-[60px] h-[60px]">
-          <svg className="w-full h-full">
-            {/* Background Circle */}
-            <circle
-              className="text-gray-300"
-              strokeWidth="5"
-              stroke="currentColor"
-              fill="transparent"
-              r="25"
-              cx="30"
-              cy="30"
-            />
-            {/* Progress Circle */}
-            <circle
-              className="text-white transition-all duration-100"
-              strokeWidth="5"
-              strokeDasharray={circumference}
-              strokeDashoffset={
-                circumference - (progress / 100) * circumference
-              }
-              strokeLinecap="round"
-              stroke="currentColor"
-              fill="transparent"
-              r="25"
-              cx="30"
-              cy="30"
-              transform="rotate(-90,30,30)"
-            />
-          </svg>
-          {/* Next Button Inside */}
-          <motion.button
-            whileHover={totalItems > 2 ? { scale: 1.1 } : {}}
-            onClick={() => nextSlide()}
-            disabled={totalItems < 2}
-            whileTap={totalItems > 2 ? { scale: 0.9 } : {}}
-            className={`absolute flex justify-center items-center w-[40px] h-[40px] rounded-full 
-    font-bold border transition duration-500 
-    ${
-      totalItems < 2
-        ? "cursor-not-allowed bg-gray-400 text-gray-200 border-gray-400" // Disabled styles
-        : "cursor-pointer bg-purple-500 text-white border-purple-500 hover:bg-white hover:text-purple-500"
-    }`}
-          >
-            <ChevronRightIcon className="w-5 h-5 sm:w-4 sm:h-4" />
-          </motion.button>
-        </div>
-      </motion.div>
-      {/* Next/Prev Buttons  ends*/}
     </div>
   );
 };
