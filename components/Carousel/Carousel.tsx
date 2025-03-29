@@ -79,10 +79,12 @@ const Carousel = (): JSX.Element => {
     setItems((prevItems) => {
       if (typeof targetIndex === "number") {
         const clickedItem = prevItems[targetIndex];
-        const remainingItems = prevItems.filter((_, idx) => idx !== targetIndex);
+        const remainingItems = prevItems.filter(
+          (_, idx) => idx !== targetIndex
+        );
         return [clickedItem, ...remainingItems];
       } else {
-        return [prevItems[1], ...prevItems.slice(2), prevItems[0],];
+        return [prevItems[1], ...prevItems.slice(2), prevItems[0]];
       }
     });
 
@@ -313,7 +315,7 @@ const Carousel = (): JSX.Element => {
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="absolute top-[82%] md:top-[85%] lg:top-[85%] right-[52%] z-[100] w-[300px] max-w-[30%] flex items-center gap-4"
+        className="absolute top-[82%] md:top-[85%] lg:top-[85%] right-[52%] z-[100] w-[300px] max-w-[30%] flex items-center gap-4 sm:gap-3"
       >
         {/* Previous Button */}
         <motion.button
@@ -321,20 +323,20 @@ const Carousel = (): JSX.Element => {
           onClick={prevSlide}
           disabled={totalItems < 2}
           whileTap={totalItems > 2 ? { scale: 0.9 } : {}}
-          className={`flex justify-center items-center w-[50px] h-[50px] rounded-full 
-    font-bold border transition duration-500 
-    ${
-      totalItems < 2
-        ? "cursor-not-allowed bg-gray-400 text-gray-200 border-gray-400" // Disabled styles
-        : "cursor-pointer bg-purple-500 text-white border-purple-500 hover:bg-white hover:text-purple-500"
-    }`}
+          className={`flex justify-center items-center w-[50px] h-[50px] sm:w-[40px] sm:h-[40px] rounded-full 
+      font-bold border transition duration-500 
+      ${
+        totalItems < 2
+          ? "cursor-not-allowed bg-gray-400 text-gray-200 border-gray-400"
+          : "cursor-pointer bg-purple-500 text-white border-purple-500 hover:bg-white hover:text-purple-500"
+      }`}
         >
           <ChevronLeftIcon className="w-5 h-5 sm:w-4 sm:h-4" />
         </motion.button>
 
         {/* Circular Progress with Next Button Inside */}
-        <div className="relative flex items-center justify-center w-[60px] h-[60px]">
-          <svg className="w-full h-full">
+        <div className="relative flex items-center justify-center w-[60px] h-[60px] sm:w-[50px] sm:h-[50px]">
+          <svg className="w-full h-full" viewBox="0 0 60 60">
             {/* Background Circle */}
             <circle
               className="text-gray-300"
@@ -347,7 +349,7 @@ const Carousel = (): JSX.Element => {
             />
             {/* Progress Circle */}
             <circle
-              className="text-white transition-all duration-100"
+              className="text-white"
               strokeWidth="5"
               strokeDasharray={circumference}
               strokeDashoffset={
@@ -368,19 +370,18 @@ const Carousel = (): JSX.Element => {
             onClick={() => nextSlide()}
             disabled={totalItems < 2}
             whileTap={totalItems > 2 ? { scale: 0.9 } : {}}
-            className={`absolute flex justify-center items-center w-[40px] h-[40px] rounded-full 
-    font-bold border transition duration-500 
-    ${
-      totalItems < 2
-        ? "cursor-not-allowed bg-gray-400 text-gray-200 border-gray-400" // Disabled styles
-        : "cursor-pointer bg-purple-500 text-white border-purple-500 hover:bg-white hover:text-purple-500"
-    }`}
+            className={`absolute flex justify-center items-center w-[40px] h-[40px] sm:w-[32px] sm:h-[32px] rounded-full 
+        font-bold border transition duration-500 
+        ${
+          totalItems < 2
+            ? "cursor-not-allowed bg-gray-400 text-gray-200 border-gray-400"
+            : "cursor-pointer bg-purple-500 text-white border-purple-500 hover:bg-white hover:text-purple-500"
+        }`}
           >
             <ChevronRightIcon className="w-5 h-5 sm:w-4 sm:h-4" />
           </motion.button>
         </div>
       </motion.div>
-      {/* Next/Prev Buttons  ends*/}
     </div>
   );
 };
