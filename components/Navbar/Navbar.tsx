@@ -48,7 +48,7 @@ const Navbar: React.FC = () => {
               shadow-2xl md:shadow-none rounded-bl-2xl rounded-br-2xl
               ${
                 isMenuOpen
-                  ? "top-[15%] opacity-100 translate-y-0 delay-100 md:opacity-100 md:translate-y-0 md:top-auto"
+                  ? "top-[14%] opacity-100 translate-y-0 delay-100 md:opacity-100 md:translate-y-0 md:top-auto"
                   : "top-[-100%] opacity-0 translate-y-[-100%] delay-100 md:opacity-100 md:translate-y-0 md:top-auto"
               }`}
             >

@@ -73,7 +73,7 @@ const OperationSection = () => {
       title: "Our Partners",
       icon: <FaHandshake className="w-8 h-8 text-white" />,
       content: (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {[
             "NGOs Coordination Board",
             "Public Benefit Organizations Authority",
@@ -86,17 +86,19 @@ const OperationSection = () => {
             <motion.div
               key={partner}
               whileHover={{ x: 5 }}
-              className="flex items-center gap-3 bg-gray-100 rounded-lg p-6 cursor-pointer"
+              className="flex items-center gap-3 bg-gray-100 rounded-lg p-4 sm:p-6 cursor-pointer w-full"
             >
-              <div className="p-1 bg-purple-400 rounded-full">
+              <div className="p-1 bg-purple-400 rounded-full flex-shrink-0">
                 <CheckIcon className="w-4 h-4 text-white" />
               </div>
-              <span className="text-purple-800 font-medium">{partner}</span>
+              <span className="text-purple-800 font-medium text-sm sm:text-base">
+                {partner}
+              </span>
             </motion.div>
           ))}
         </div>
       ),
-    },
+    }
   ];
 
   return (
