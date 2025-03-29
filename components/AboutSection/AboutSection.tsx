@@ -140,9 +140,7 @@ const AboutSection = (): JSX.Element => {
             viewport={{ once: true }}
             className="text-gray-600 mb-5"
           >
-            Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu
-            diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet
-            lorem sit clita duo justo magna dolore erat amet
+            Guided by our six pillars—education, environment, healthcare, women&apos;s empowerment, skill development, and community growth—we&apos;ve transformed 12,000+ lives across Nandi County since 2015. Last year alone, our programs provided 280 scholarships, planted 5,700 trees near schools and health centers, trained 450 women in sustainable agriculture, and equipped 120 youth with vocational skills. Each initiative reflects our core belief: that empowered communities create lasting change.
           </motion.p>
 
           {/* Buttons with Fade-in Animation */}
