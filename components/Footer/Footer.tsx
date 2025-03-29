@@ -45,7 +45,7 @@ const Footer: React.FC = () => {
                 <a
                   key={index}
                   href={item.link}
-                  className="p-2 border border-gray-500 text-gray-400 rounded hover:bg-purple-600 hover:text-white hover:border-purple-600 transition duration-300"
+                  className="p-2 border border-gray-500 text-gray-400 rounded-full hover:bg-purple-600 hover:text-white hover:border-purple-600 transition duration-300"
                 >
                   {item.icon}
                 </a>
@@ -62,7 +62,7 @@ const Footer: React.FC = () => {
                 county, Kenya
               </li>
               <li className="flex items-center">
-                <PhoneIcon className="h-5 w-5 mr-3" /> +254 739443403
+                <PhoneIcon className="h-5 w-5 mr-3" /> +254 117483970
               </li>
               <li className="flex items-center">
                 <EnvelopeIcon className="h-5 w-5 mr-3" />
@@ -106,8 +106,8 @@ const Footer: React.FC = () => {
                 placeholder="Your email"
                 className="rounded-bl-full rounded-tl-full bg-transparent border border-purple-500 text-gray-400 px-4 py-2 flex-1 outline-none"
               />
-              <button className="bg-purple-600 rounded-br-full rounded-tr-full text-white px-5 py-2 font-semibold hover:bg-purple-600 transition duration-300">
-                SignUp
+              <button className="opacity-50 pointer-events-none bg-purple-600 rounded-br-full rounded-tr-full text-white px-5 py-2 font-semibold hover:bg-purple-600 transition duration-300">
+                Subscribe
               </button>
             </div>
           </div>

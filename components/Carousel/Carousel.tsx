@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, JSX } from "react";
+import React, { useState, useEffect, JSX, useRef, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { SlideTypes } from "@/types/types";
 import Link from "next/link";
 import Image from "next/image";
 import DualRingLoader from "../Loader/DualRingLoader";
+import { useWindowSize } from "@/hooks/useWindowSize";
 
 const initialItems: SlideTypes[] = [
   {
@@ -50,7 +51,10 @@ const initialItems: SlideTypes[] = [
   },
 ];
 
-const Carousel=():JSX.Element=>{
+const Carousel = (): JSX.Element => {
+  const { width: windowWidth } = useWindowSize(); // Get window width
+  const isSmallScreen = windowWidth < 768;
+  const isMediumScreen = windowWidth >= 768 && windowWidth < 1024;
   const [items, setItems] = useState<SlideTypes[]>(initialItems);
   const [progress, setProgress] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -58,6 +62,9 @@ const Carousel=():JSX.Element=>{
   const totalItems = items.length;
   const radius = 30;
   const circumference = 2 * Math.PI * radius;
+  const isMounted = useRef<boolean>(false);
+  const rotationLock = useRef<boolean>(false);
+  const progressInterval = useRef<NodeJS.Timeout | null>(null);
 
   // Handle image load
   const handleImageLoad = () => {
@@ -65,16 +72,25 @@ const Carousel=():JSX.Element=>{
   };
 
   // Next slide function
-  const nextSlide = () => {
+  const nextSlide = useCallback((targetIndex?: number) => {
+    if (rotationLock.current) return;
+    rotationLock.current = true;
+
     setItems((prevItems) => {
-      const newItems = [...prevItems];
-      const firstItem = newItems.shift(); // Remove the first item
-      if (firstItem) {
-        newItems.push(firstItem); // Move it to the end of the array
+      if (typeof targetIndex === "number") {
+        const clickedItem = prevItems[targetIndex];
+        const remainingItems = prevItems.filter((_, idx) => idx !== targetIndex);
+        return [clickedItem, ...remainingItems];
+      } else {
+        return [prevItems[1], ...prevItems.slice(2), prevItems[0],];
       }
-      return newItems;
     });
-  };
+
+    setProgress(100);
+    setTimeout(() => {
+      rotationLock.current = false;
+    }, 50);
+  }, []);
 
   // Previous slide function
   const prevSlide = () => {
@@ -86,24 +102,46 @@ const Carousel=():JSX.Element=>{
       }
       return newItems;
     });
+    setProgress(100);
   };
 
-  useEffect(() => {
-    if (totalItems > 2) {
-      const interval = setInterval(() => {
-        setProgress((prev) => {
-          if (prev <= 0) {
-            nextSlide(); // Move to the next slide when progress reaches 0
-            return 100; // Reset progress
-          }
-          return prev - 1; // Countdown the progress
-        });
-      }, duration / 100); // Smoothly decrease progress over time
-  
-      return () => clearInterval(interval);
+  // Start/restart the progress timer
+  const startProgressTimer = useCallback(() => {
+    if (progressInterval.current) {
+      clearInterval(progressInterval.current);
     }
-  }, [totalItems]);
-  
+
+    progressInterval.current = setInterval(() => {
+      setProgress((prev) => {
+        const newProgress = prev - 1;
+        if (newProgress <= 0) {
+          nextSlide();
+          return 100;
+        }
+        return newProgress;
+      });
+    }, duration / 100);
+  }, [nextSlide]);
+
+  // Initialize and clean up timer
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      startProgressTimer();
+    }
+
+    return () => {
+      if (progressInterval.current) {
+        clearInterval(progressInterval.current);
+      }
+    };
+  }, [startProgressTimer]);
+
+  // Restart timer when items change
+  useEffect(() => {
+    startProgressTimer();
+  }, [items, startProgressTimer]);
+
   return (
     <div className="w-full h-screen overflow-hidden relative">
       {/* Background Images */}
@@ -170,7 +208,8 @@ const Carousel=():JSX.Element=>{
                       href={items[0].link}
                       className="text-sm md:text-lg lg:text-lg mt-4 inline-flex items-center px-4 py-2 border-2 border-purple-500 rounded-full transition duration-200 hover:bg-purple-500"
                     >
-                      See More <ChevronRightIcon className="ml-2 w-5 h-5 sm:w-4 sm:h-4" />
+                      See More{" "}
+                      <ChevronRightIcon className="ml-2 w-5 h-5 sm:w-4 sm:h-4" />
                     </Link>
                   </motion.div>
                 )}
@@ -186,35 +225,81 @@ const Carousel=():JSX.Element=>{
       <div>
         <AnimatePresence>
           {items.slice(1).map((item, idx) => {
-            const leftOffset = `calc(68% + ${idx * 200}px)`;
-            // const leftOffset = `calc(${68 - idx * 10}% + ${idx * 20}px)`; // Adjusted calculation
-            // const leftOffset = `calc(68% + ${idx * 20}px)`; // Adjusted calculation
+            // Determine how many images to show based on screen size
+            let shouldShow = true;
+            let shouldFade = false;
 
-            const scale = idx === 0 ? 1 : 0.9; // Active item slightly larger
-            const opacity = idx === 0 ? 1 : idx > 0 ? 0.7 : 0; // Active item full opacity, others reduced
+            if (isSmallScreen) {
+              shouldShow = idx === 0; // Only show first image on small screens
+            } else {
+              shouldShow = idx < 3; // Show max 3 images on larger screens
+              shouldFade = idx >= 3; // Fade out images beyond 3
+            }
+
+            if (!shouldShow && !shouldFade) return null;
+
+            const largeScreenOffset = `calc(65vw + ${idx * 200}px)`;
+            const mediumScreenOffset = `calc(60vw + ${idx * 180}px)`;
+            const smallScreenOffset = `calc(60vw + ${idx * 120}px)`;
+
+            // Scale and opacity logic
+            const scale = idx === 0 ? 1 : 0.9;
+            let opacity = idx === 0 ? 1 : idx > 0 ? 0.7 : 0;
+            if (shouldFade) opacity = 0; // Force opacity to 0 for hidden images
+
+            // Responsive dimensions
+            const width = isSmallScreen
+              ? "160px"
+              : isMediumScreen
+              ? "170px"
+              : "180px";
+            const height = isSmallScreen
+              ? "220px"
+              : isMediumScreen
+              ? "230px"
+              : "250px";
 
             return (
               <motion.div
-                key={item.image} 
-                onClick={()=>nextSlide()}
+                key={item.image}
+                onClick={() => nextSlide(idx + 1)}
                 initial={{
                   opacity: 0,
                   scale: 0.8,
                   y: 30,
-                  left: `calc(68% + ${(idx + 1) * 200}px)`,
-                }} // Start from the right
-                animate={{ opacity, scale, y: 0, left: leftOffset }} // Move to the correct position
+                  left: isSmallScreen
+                    ? `calc(65vw + ${(idx + 1) * 120}px)`
+                    : isMediumScreen
+                    ? `calc(65vw + ${(idx + 1) * 180}px)`
+                    : `calc(65vw + ${(idx + 1) * 200}px)`,
+                }}
+                animate={{
+                  opacity,
+                  scale,
+                  y: 0,
+                  left: isSmallScreen
+                    ? smallScreenOffset
+                    : isMediumScreen
+                    ? mediumScreenOffset
+                    : largeScreenOffset,
+                }}
                 exit={{
                   opacity: 0,
                   scale: 0.8,
                   y: -20,
-                  left: `calc(68% + ${(idx - 1) * 200}px)`,
-                }} // Move to the left and fade out
+                  left: isSmallScreen
+                    ? `calc(65vw + ${(idx - 1) * 120}px)`
+                    : isMediumScreen
+                    ? `calc(65vw + ${(idx - 1) * 180}px)`
+                    : `calc(65vw + ${(idx - 1) * 200}px)`,
+                }}
                 transition={{ duration: 0.6, ease: "easeInOut" }}
-                className="cursor-pointer absolute w-[180px] h-[250px] top-[90%] md:top-[80%] z-50 -translate-y-[70%] rounded-[20px] 
-                            shadow-[0_25px_50px_rgba(0,0,0,0.3)] bg-center bg-cover transition-all duration-1000"
+                className="cursor-pointer absolute top-[90%] md:top-[80%] z-50 -translate-y-[70%] rounded-[20px] 
+                  shadow-[0_25px_50px_rgba(0,0,0,0.3)] bg-center bg-cover transition-all duration-1000"
                 style={{
                   backgroundImage: `url(${item.image})`,
+                  width: width,
+                  height: height,
                 }}
               ></motion.div>
             );
@@ -280,7 +365,7 @@ const Carousel=():JSX.Element=>{
           {/* Next Button Inside */}
           <motion.button
             whileHover={totalItems > 2 ? { scale: 1.1 } : {}}
-            onClick={nextSlide}
+            onClick={() => nextSlide()}
             disabled={totalItems < 2}
             whileTap={totalItems > 2 ? { scale: 0.9 } : {}}
             className={`absolute flex justify-center items-center w-[40px] h-[40px] rounded-full 
@@ -298,6 +383,6 @@ const Carousel=():JSX.Element=>{
       {/* Next/Prev Buttons  ends*/}
     </div>
   );
-}
+};
 
-export default Carousel
+export default Carousel;

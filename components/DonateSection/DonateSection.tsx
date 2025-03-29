@@ -44,7 +44,7 @@ export default function DonateSection({isDonatePage=true}:DonatePageTypes) {
             transition={{ delay: 0.5, duration: 1 }}
             variants={fadeInUp}
           >
-            <form>
+            <form className="opacity-50 pointer-events-none">
               <div className="space-y-6">
                 <div>
                   <label

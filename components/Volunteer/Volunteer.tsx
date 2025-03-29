@@ -10,7 +10,7 @@ export default function Volunteer() {
       <div className="relative flex justify-between items-center w-full max-w-6xl px-6">
         {/* Left Text */}
         <h2 className="text-white text-2xl md:text-3xl font-bold max-w-lg">
-          Let's Change The World <br /> With Humanity
+          Let&apos;s Change The World <br /> With Humanity
         </h2>
 
         {/* Right Button */}

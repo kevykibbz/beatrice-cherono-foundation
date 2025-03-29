@@ -12,20 +12,6 @@ const slides = [
     title: "Our Vision",
     text: "To achieve a strong and cohesive society that contributes to the overall growth of the country’s economy. A better place where children become responsible citizens of their Country, and contribute towards the benefit of others.",
   },
-  {
-    title: "Core Values",
-    text: "The Organization upholds the following values:",
-    values: [
-      "Integrity",
-      "We are committed to child Education",
-      "Teamwork",
-      "Innovation",
-      "Transparency",
-      "Attitude of Giving",
-      "Compassion",
-      "Empathy",
-    ],
-  },
 ];
 
 export default function MissionSection() {
@@ -69,15 +55,6 @@ export default function MissionSection() {
 
               {/* Description */}
               <p className="text-gray-600 mt-3">{slides[currentIndex].text}</p>
-
-              {/* Render Values List If Present */}
-              {slides[currentIndex].values && (
-                <ul className="mt-3 space-y-1 text-gray-600 list-disc list-inside">
-                  {slides[currentIndex].values.map((item, idx) => (
-                    <li key={idx}>{item}</li>
-                  ))}
-                </ul>
-              )}
             </motion.div>
           </AnimatePresence>
 

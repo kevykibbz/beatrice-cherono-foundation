@@ -1,55 +1,77 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { GalleryImage } from "@/types/types";
 
 const GallarySection = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [direction, setDirection] = useState<number>(1);
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
 
-  const images = [
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  const images: GalleryImage[] = [
     {
-      src: "https://i.ibb.co/qCkd9jS/img1.jpg",
-      title: "Switzerland",
-      description:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ab, eum!",
+      src: "/images/gallary-1.jpg",
+      title: "Eldoret",
     },
     {
-      src: "https://i.ibb.co/jrRb11q/img2.jpg",
-      title: "Finland",
-      description:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ab, eum!",
+      src: "/images/gallary-2.jpg",
+      title: "Kisumu",
     },
     {
-      src: "https://i.ibb.co/NSwVv8D/img3.jpg",
-      title: "Iceland",
-      description:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ab, eum!",
+      src: "/images/gallary-3.jpg",
+      title: "Kericho",
     },
     {
-      src: "https://i.ibb.co/Bq4Q0M8/img4.jpg",
-      title: "Australia",
-      description:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ab, eum!",
+      src: "/images/gallary-4.jpg",
+      title: "Nairobi",
     },
     {
-      src: "https://i.ibb.co/jTQfmTq/img5.jpg",
-      title: "Netherland",
-      description:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ab, eum!",
+      src: "/images/gallary-5.jpg",
+      title: "Kisii",
     },
     {
-      src: "https://i.ibb.co/RNkk6L0/img6.jpg",
-      title: "Ireland",
-      description:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ab, eum!",
+      src: "/images/gallary-6.jpg",
+      title: "Nanyuki",
     },
   ];
 
-  const handleNext = () => {
-    setActiveIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  const startInterval = useCallback(() => {
+    if (intervalId) clearInterval(intervalId);
+
+    // Start new interval
+    const id = setInterval(() => {
+      setDirection(1);
+      setActiveIndex((prev) => (prev + 1) % images.length);
+    }, 5000);
+
+    setIntervalId(id);
+  }, [intervalId,images.length]); 
+
+  useEffect(() => {
+    startInterval();
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [intervalId,startInterval]);
+
+  const handleImageClick = (index: number) => {
+    setDirection(index > activeIndex ? 1 : -1);
+    setActiveIndex(index);
+    startInterval();
   };
 
   return (
-    <section className="container mx-auto p-6 my-6">
+    <section className="w-full max-w-7xl mx-0 md:mx-auto px-4">
       <div className="grid grid-cols-12 gap-6 items-center">
         {/* Left Section - Text and Button */}
         <div className="col-span-12 md:col-span-4 text-center md:text-left">
@@ -71,46 +93,71 @@ const GallarySection = () => {
         <div className="col-span-12 md:col-span-8 relative">
           {/* Main Image */}
           <div className="relative w-full aspect-[16/9] rounded-lg shadow-md overflow-hidden">
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={activeIndex}
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
+                custom={direction}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -50 }}
+                transition={{ duration: 0.8, ease: "easeInOut" }}
                 className="w-full h-full bg-cover bg-center"
                 style={{ backgroundImage: `url(${images[activeIndex].src})` }}
               >
-                {/* Optional: Add a caption or overlay here */}
+                <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-black/80  to-transparent p-4">
+                  <motion.h3
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                    className="text-sm sm:text-lg md:text-2xl font-bold text-white drop-shadow-lg"
+                  >
+                    {images[activeIndex].title}
+                  </motion.h3>
+                </div>
               </motion.div>
             </AnimatePresence>
           </div>
 
-          {/* Floating Smaller Cards */}
+          {/* Floating Smaller Cards - Now Responsive */}
           <div className="overflow-hidden">
-            <div className="absolute bottom-0 right-0 flex flex-row space-x-4 z-10 p-4">
+            <div className="absolute bottom-0 right-0 flex flex-row space-x-2 md:space-x-4 z-10 p-2 md:p-4">
               {images.map((image, index) => {
-                // Determine if the card should be visible
-                const isVisible =
-                  index === activeIndex || // Always show the active card
-                  index === (activeIndex + 1) % images.length || // Show the next card
-                  index === (activeIndex + 2) % images.length; // Show the second next card
+                const isVisibleOnMobile = index === activeIndex;
+                const isVisibleOnDesktop =
+                  index === activeIndex ||
+                  index === (activeIndex + 1) % images.length ||
+                  index === (activeIndex + 2) % images.length;
+
+                const shouldShow = isMobile
+                  ? isVisibleOnMobile
+                  : isVisibleOnDesktop;
 
                 return (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: isVisible ? 1 : 0, y: 0 }} // Control opacity based on visibility
-                    exit={{ opacity: 0, y: -20 }}
+                    animate={{
+                      opacity: shouldShow ? 1 : 0,
+                      y: shouldShow ? 0 : 20,
+                      scale: shouldShow ? 1 : 0.9,
+                    }}
                     transition={{ duration: 0.3 }}
-                    onClick={() => setActiveIndex(index)}
+                    onClick={() => handleImageClick(index)}
                     className={`
-              w-24 h-34 md:w-30 md:h-40 bg-cover bg-center rounded-lg shadow-lg cursor-pointer hover:scale-110 transform transition
-              ${isVisible ? "block" : "hidden"} // Hide non-visible cards
-              ${
-                index === activeIndex ? "z-20" : "z-10"
-              } // Bring active card to front
-            `}
+                            ${
+                              isMobile
+                                ? "w-16 h-20"
+                                : "w-24 h-30 md:w-30 md:h-40"
+                            }
+                            bg-cover bg-center rounded-lg shadow-lg cursor-pointer 
+                            hover:scale-110 transform transition-all duration-300
+                            ${
+                              index === activeIndex
+                                ? "ring-2 ring-purple-500 z-20"
+                                : "z-10"
+                            }
+                            ${shouldShow ? "block" : "hidden"}
+                          `}
                     style={{
                       backgroundImage: `url(${image.src})`,
                     }}
@@ -121,6 +168,7 @@ const GallarySection = () => {
           </div>
         </div>
       </div>
+      <div className="h-16"></div>
     </section>
   );
 };

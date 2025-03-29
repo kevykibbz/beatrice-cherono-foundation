@@ -48,11 +48,11 @@ const Navbar: React.FC = () => {
               shadow-2xl md:shadow-none rounded-bl-2xl rounded-br-2xl
               ${
                 isMenuOpen
-                  ? "top-[9%] opacity-100 translate-y-0 delay-100 md:opacity-100 md:translate-y-0 md:top-auto"
+                  ? "top-[15%] opacity-100 translate-y-0 delay-100 md:opacity-100 md:translate-y-0 md:top-auto"
                   : "top-[-100%] opacity-0 translate-y-[-100%] delay-100 md:opacity-100 md:translate-y-0 md:top-auto"
               }`}
             >
-              <ul className="flex md:flex-row flex-col md:items-center md:gap-[4vh] gap-6 text-base md:text-lg lg:text-xl">
+              <ul className="flex md:flex-row flex-col md:items-center md:gap-[4vh] gap-6 text-base md:text-lg lg:text-xl my-6 md:my-0">
                 {paths.map((link, index) => (
                   <li key={index}>
                     <Link
@@ -75,7 +75,8 @@ const Navbar: React.FC = () => {
             {/* Donate Button */}
             <Link
               href="/donate"
-              className="flex items-center border border-purple-500 text-sm md:text-base lg:text-lg text-purple-600 px-4 py-2 rounded-full hover:bg-purple-500 hover:text-white transition duration-300"
+              aria-disabled="true"
+              className="cursor-not-allowed opacity-50 hidden md:flex items-center border border-purple-500 text-sm md:text-base lg:text-lg text-purple-600 px-4 py-2 rounded-full hover:bg-purple-500 hover:text-white transition duration-300"
             >
               Donate Now
               <span className="ml-2 flex items-center justify-center w-6 h-6 bg-purple-500 text-white rounded-full">

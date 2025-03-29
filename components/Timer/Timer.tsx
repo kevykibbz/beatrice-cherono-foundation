@@ -1,14 +1,13 @@
 "use client";
 
+import { CountdownTimerProps, TimeLeft } from "@/types/types";
 import { motion } from "framer-motion";
-import React from "react";
+import React, { useCallback } from "react";
 import { useState, useEffect } from "react";
 
-interface CountdownTimerProps {
-  targetDate: string; // Format: "YYYY-MM-DD HH:MM:SS"
-}
+
 export default function Timer({ targetDate }: CountdownTimerProps) {
-  const calculateTimeLeft = () => {
+  const calculateTimeLeft = useCallback((): TimeLeft => {
     const difference = new Date(targetDate).getTime() - new Date().getTime();
     if (difference > 0) {
       return {
@@ -19,14 +18,14 @@ export default function Timer({ targetDate }: CountdownTimerProps) {
       };
     }
     return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-  };
+  }, [targetDate]); // targ
 
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
   useEffect(() => {
     const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
     return () => clearInterval(timer);
-  }, [targetDate]);
+  }, [targetDate,calculateTimeLeft]);
 
   return (
     <section className="container mx-auto p-6 my-6">
@@ -76,9 +75,9 @@ export default function Timer({ targetDate }: CountdownTimerProps) {
             Be Part of the Change
           </h2>
           <p className="text-gray-600 mb-6">
-            Our NGO fundraiser is more than just an event—it's a movement.
+            Our NGO fundraiser is more than just an event—it&apos;s a movement.
             Together, we can provide education, healthcare, and support for
-            those in need. Explore our gallery to see the impact we've made so
+            those in need. Explore our gallery to see the impact we&apos;ve made so
             far.
           </p>
         </motion.div>

@@ -10,43 +10,27 @@ import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 const users: TestimonialsTypes[] = [
   {
     id: 1,
-    name: "Erick Jones",
-    role: "Managing Director, USA",
-    img: "/images/client-1.jpg",
+    name: "Erick Kamau",
+    role: "Managing Director, RedCross",
+    img: "/images/profile.png",
     testimonial:
       "Working with this NGO has been a life-changing experience. Their commitment to community development and transparency in operations is truly inspiring. I’ve seen firsthand how their projects positively impact lives.",
   },
   {
     id: 2,
-    name: "Ben Smith",
-    role: "Volunteer Coordinator, USA",
-    img: "/images/client-2.jpg",
+    name: "Stella Uyoni",
+    role: "Volunteer Coordinator, Kapsoya",
+    img: "/images/profile.png",
     testimonial:
       "Volunteering here has given me a new perspective on social impact. The team is incredibly dedicated, and the projects are well-organized, making it easy for volunteers to contribute effectively.",
   },
   {
     id: 3,
-    name: "Ellen Harper",
-    role: "Content Strategist, USA",
-    img: "/images/client-3.jpg",
+    name: "Lennox Londo",
+    role: "Software Engineer, Acre Africa",
+    img: "/images/profile.png",
     testimonial:
       "This NGO is doing incredible work in underserved communities. I had the chance to document their initiatives, and the stories of resilience and change are truly moving.",
-  },
-  {
-    id: 4,
-    name: "Jonathan Doe",
-    role: "Program Manager, USA",
-    img: "/images/client-4.jpg",
-    testimonial:
-      "I've collaborated with many NGOs, but this organization stands out for its professionalism and impact-driven approach. Their education and healthcare programs are making a real difference.",
-  },
-  {
-    id: 5,
-    name: "Emiley McArthur",
-    role: "Donor & Supporter, USA",
-    img: "/images/client-5.jpg",
-    testimonial:
-      "I’ve supported this NGO for years, and I’m always impressed by their accountability and dedication. Seeing the progress reports and real-life success stories makes every donation feel meaningful.",
   },
 ];
 
@@ -114,11 +98,14 @@ export default function TestimonialsSection() {
               {users.map((user, index) => (
                 <motion.div
                   key={user.id}
-                  className={`client-item rounded-lg transition-all duration-300 relative ${
-                    selectedUser.id === user.id
-                      ? "scale-90 shadow-lg translate-x-4 bg-purple-600 text-white"
-                      : "opacity-50"
-                  }`}
+                  className={`
+      client-item rounded-lg transition-all duration-300 relative
+      ${
+        selectedUser.id === user.id
+          ? "scale-90 shadow-lg translate-x-4 bg-gray-100 border-3 border-purple-500 text-purple-500"
+          : "opacity-50 border-2 border-transparent"
+      }
+    `}
                   onClick={() => setSelectedIndex(index)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.95 }}
@@ -130,11 +117,28 @@ export default function TestimonialsSection() {
                       alt={user.name}
                       width={50}
                       height={50}
+                      className="rounded-full"
                     />
                   </div>
                   <div className="client-intro">
-                    <h5>{user.name}</h5>
-                    <small className="client-designation">{user.role}</small>
+                    <h5
+                      className={`font-medium ${
+                        selectedUser.id === user.id
+                          ? "text-purple-600"
+                          : "text-gray-700"
+                      }`}
+                    >
+                      {user.name}
+                    </h5>
+                    <small
+                      className={`text-sm ${
+                        selectedUser.id === user.id
+                          ? "text-purple-400"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {user.role}
+                    </small>
                   </div>
                 </motion.div>
               ))}

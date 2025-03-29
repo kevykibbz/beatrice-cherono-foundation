@@ -67,3 +67,24 @@ export type SendEmailTypes={
 export type DonatePageTypes={
   isDonatePage?:boolean;
 }
+
+export interface GalleryImage {
+  src: string;
+  title: string;
+  description?: string;
+}
+
+export interface TimeLeft {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+export interface TimerProps {
+  targetDate: string;
+}
+
+export interface CountdownTimerProps {
+  targetDate: string; // Format: "YYYY-MM-DD HH:MM:SS"
+}
