@@ -82,9 +82,9 @@ export default function Timer({ targetDate }: CountdownTimerProps) {
               Be Part of the Change
             </h2>
             <p className="text-sm sm:text-base text-gray-600 mb-4 md:mb-6">
-              Our NGO fundraiser is more than just an event—it's a movement.
+              Our NGO fundraiser is more than just an event—it&apos;s a movement.
               Together, we can provide education, healthcare, and support for
-              those in need. Explore our gallery to see the impact we've made so
+              those in need. Explore our gallery to see the impact we&apos;ve made so
               far.
             </p>
           </motion.div>

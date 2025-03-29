@@ -101,7 +101,7 @@ const FounderCard = () => {
             >
               Beatrice Cherono Melly Foundation, is guided by its pillars that
               form the foundation of its transformative work. By prioritizing
-              education, environment, healthcare, women's empowerment, skill
+              education, environment, healthcare, women&apos;s empowerment, skill
               enhancement, and community development, we are driving positive
               change in the region. These pillars represent not only the core
               values of this NGO but also its unwavering commitment to creating
