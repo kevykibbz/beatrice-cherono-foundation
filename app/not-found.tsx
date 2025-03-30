@@ -19,7 +19,7 @@ export default function NotFound() {
             </p>
             <Link
               href="/"
-              className="inline-flex items-center border border-purple-500 text-purple-500 px-6 py-3 rounded-lg hover:bg-purple-500 hover:text-white transition duration-300"
+              className="inline-flex items-center border border-purple-500 text-purple-500 px-6 py-3 rounded-full hover:bg-purple-500 hover:text-white transition duration-300"
             >
               Go Back To Home
               <span className="ml-2 p-1 bg-purple-500 text-white rounded-full">

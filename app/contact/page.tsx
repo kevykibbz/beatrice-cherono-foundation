@@ -182,14 +182,15 @@ export default function Contact() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="relative w-full h-[450px] rounded-lg overflow-hidden shadow-lg"
           >
-            <iframe
-              className="absolute inset-0 w-full h-full"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1603794290143!5m2!1sen!2sbd"
-              style={{ border: "none" }}
-              allowFullScreen
-              aria-hidden="false"
-              tabIndex={0}
-            />
+            <iframe  
+            className="absolute inset-0 w-full h-full" 
+            style={{ border: "none" }}
+            allowFullScreen
+            aria-hidden="false"
+            tabIndex={0}
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.6614767313736!2d35.26624217377779!3d0.5080376637057457!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x17810146235f4bf7%3A0x840b6ee35e268730!2sMachayo%20court!5e0!3m2!1sen!2ske!4v1743320501714!5m2!1sen!2ske"  
+            loading="lazy" 
+            referrerPolicy="no-referrer-when-downgrade"/>
           </motion.div>
         </div>
       </div>

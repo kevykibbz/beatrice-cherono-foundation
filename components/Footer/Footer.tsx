@@ -5,7 +5,7 @@ import {
   MapPinIcon,
   PhoneIcon,
 } from "@heroicons/react/24/outline";
-import { FaFacebook, FaTwitter, FaLinkedin, FaYoutube } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaInstagram, FaTiktok } from "react-icons/fa";
 import { PathTypes } from "@/types/types";
 
 const paths: PathTypes[] = [
@@ -37,10 +37,10 @@ const Footer: React.FC = () => {
             </p>
             <div className="flex space-x-2">
               {[
-                { icon: <FaTwitter />, link: "#" },
-                { icon: <FaFacebook />, link: "#" },
-                { icon: <FaYoutube />, link: "#" },
-                { icon: <FaLinkedin />, link: "#" },
+                { icon: <FaTwitter />, link: "https://x.com/BCMFoundation" },
+                { icon: <FaFacebook />, link: "https://www.facebook.com/profile.php?id=61574584172888" },
+                { icon: <FaInstagram />, link: "https://www.instagram.com/bcm.foundation/" },
+                { icon: <FaTiktok />, link: "https://www.tiktok.com/@bcm.foundation?lang=en" },
               ].map((item, index) => (
                 <a
                   key={index}

@@ -10,15 +10,15 @@ import Link from "next/link";
 const teamMembers: TeamMembersTypes[] = [
   {
     id: 1,
-    name: "Joe Simmons",
-    designation: "Designation",
-    img: "/images/team-1.jpg",
+    name: "Yvonne Kemboi",
+    designation: "Secretary",
+    img: "/images/secretary.jpg",
   },
   {
     id: 2,
-    name: "Sarah Hassan",
-    designation: "Designation",
-    img: "/images/team-2.jpg",
+    name: "Yvonne Kakai",
+    designation: "Board Member",
+    img: "/images/board_member.jpg",
   },
   {
     id: 3,

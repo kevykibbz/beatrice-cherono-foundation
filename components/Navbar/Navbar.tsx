@@ -12,6 +12,8 @@ import TopBar from "../TopBar/Topbar";
 import SiteLogo from "./SiteLogo";
 import { PathTypes } from "@/types/types";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "@/hooks/use-session";
+import { SignOutModal } from "../Modals/SignOutModal";
 
 const paths: PathTypes[] = [
   { name: "Home", path: "/" },
@@ -24,19 +26,26 @@ const paths: PathTypes[] = [
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const pathname = usePathname(); // Get the current active path
-
+  const [signOutModal, setSignOutModal] = useState<boolean>(false);
+  
+  const pathname = usePathname();
+  const { isAuthenticated } = useAuth();
 
   return (
     <React.Fragment>
       <TopBar />
+      <SignOutModal 
+        open={signOutModal} 
+        onOpenChange={setSignOutModal} 
+      />
       <header className="bg-white z-[120]">
         <nav className="flex justify-between items-center mx-auto w-[98%]">
           {/* Logo */}
           <div className="flex gap-2 items-center">
             <SiteLogo />
             <h1 className="hidden lg:block text-sm md:text-lg lg:text-lg font-bold">
-              Beatrice Cherono <span className="text-purple-500">Melly</span> Foundation
+              Beatrice Cherono <span className="text-purple-500">Melly</span>{" "}
+              Foundation
             </h1>
           </div>
 
@@ -57,7 +66,7 @@ const Navbar: React.FC = () => {
                   <li key={index}>
                     <Link
                       href={link.path}
-                      onClick={()=>setIsMenuOpen(false)}
+                      onClick={() => setIsMenuOpen(false)}
                       className={`transition duration-300 ${
                         pathname === link.path
                           ? "text-purple-500 font-semibold"
@@ -69,6 +78,18 @@ const Navbar: React.FC = () => {
                     </Link>
                   </li>
                 ))}
+                {isAuthenticated && (
+                   <li>
+                   <Link
+                     href="#"
+                     onClick={() => setSignOutModal(true)}
+                     className="text-black hover:text-purple-500"
+                   >
+                     <ChevronRightIcon className="block md:hidden w-5 h-5" />{" "}
+                     Sign Out
+                   </Link>
+                 </li>
+                )} 
               </ul>
             </div>
 
@@ -87,7 +108,10 @@ const Navbar: React.FC = () => {
             {/* Mobile Menu Button */}
             <button
               className="md:hidden text-white p-2 hover:text-purple-500 transition duration-300"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={() => {
+                setIsMenuOpen(false);
+                setSignOutModal(true);
+              }}
             >
               {isMenuOpen ? (
                 <XMarkIcon className="w-[30px] h-[30px] text-purple-500" />

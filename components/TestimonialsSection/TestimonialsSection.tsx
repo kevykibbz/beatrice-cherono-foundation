@@ -1,50 +1,76 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./Testimonials.css";
 import Image from "next/image";
-import { TestimonialsTypes } from "@/types/types";
+import { ITestimonial, TestimonialsTypes } from "@/types/types";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
+import { AddTestimonialButton } from "./AddTestimonialButton/AddTestimonialButton";
+import { Types } from "mongoose";
+import React from "react";
+import DualRingLoader from "../Loader/DualRingLoader";
 
-const users: TestimonialsTypes[] = [
-  {
-    id: 1,
-    name: "Erick Kamau",
-    role: "Managing Director, RedCross",
-    img: "/images/profile.png",
-    testimonial:
-      "Working with this NGO has been a life-changing experience. Their commitment to community development and transparency in operations is truly inspiring. I’ve seen firsthand how their projects positively impact lives.",
-  },
-  {
-    id: 2,
-    name: "Stella Uyoni",
-    role: "Volunteer Coordinator, Kapsoya",
-    img: "/images/profile.png",
-    testimonial:
-      "Volunteering here has given me a new perspective on social impact. The team is incredibly dedicated, and the projects are well-organized, making it easy for volunteers to contribute effectively.",
-  },
-  {
-    id: 3,
-    name: "Lennox Londo",
-    role: "Software Engineer, Acre Africa",
-    img: "/images/profile.png",
-    testimonial:
-      "This NGO is doing incredible work in underserved communities. I had the chance to document their initiatives, and the stories of resilience and change are truly moving.",
-  },
-];
+const DEFAULT_USER: TestimonialsTypes = {
+  id: "",
+  name: "Loading...",
+  role: "Loading...",
+  image: "/images/profile.png",
+  testimonial: "Loading...",
+};
 
 export default function TestimonialsSection() {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
-  const selectedUser = users[selectedIndex];
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [users, setUsers] = useState<TestimonialsTypes[]>([DEFAULT_USER]);
+  const selectedUser = users[selectedIndex] || DEFAULT_USER;
+
+  // Process testimonials into displayable users
+  const processTestimonials = (
+    testimonials: ITestimonial[]
+  ): TestimonialsTypes[] => {
+    if (!testimonials.length) return [DEFAULT_USER];
+    return testimonials.map((testimonial) => {
+      const user =
+        testimonial.user instanceof Types.ObjectId ? null : testimonial.user;
+
+      return {
+        id: testimonial._id.toString(),
+        name: user?.name || "Anonymous",
+        role: testimonial.role,
+        image: user?.image || "/images/profile.png",
+        testimonial: testimonial.testimonial,
+      };
+    });
+  };
+
+  // Fetch testimonials from API
+  const fetchTestimonials = useCallback(async () => {
+    try {
+      const res = await fetch("/api/testimonials?approved=true");
+      const data = await res.json();
+      setUsers(data.length ? processTestimonials(data) : [DEFAULT_USER]);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching testimonials:", error);
+      setIsLoading(false);
+    }
+  }, []); //
+
+  // Initial fetch
+  useEffect(() => {
+    fetchTestimonials();
+  }, [fetchTestimonials]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSelectedIndex((prevIndex) => (prevIndex + 1) % users.length);
-    }, 5000); // Auto-switch every 5 seconds
+    if (users.length > 1) {
+      const interval = setInterval(() => {
+        setSelectedIndex((prevIndex) => (prevIndex + 1) % users.length);
+      }, 6000); // Auto-switch every 6 seconds
 
-    return () => clearInterval(interval);
-  }, []);
+      return () => clearInterval(interval);
+    }
+  }, [users.length]);
 
   // Animation for testimonials when switching
   const textVariants = {
@@ -95,115 +121,138 @@ export default function TestimonialsSection() {
               initial="hidden"
               animate="visible"
             >
-              {users.map((user, index) => (
+              {users.length > 0 ? (
+                users.map((user, index) => (
+                  <motion.div
+                    key={user.id}
+                    className={`
+        client-item rounded-lg transition-all duration-300 relative
+        ${
+          selectedIndex === index
+            ? "scale-90 shadow-lg translate-x-4 bg-gray-100 border-3 border-purple-500 text-purple-500"
+            : "opacity-50 border-2 border-transparent"
+        }
+      `}
+                    onClick={() => setSelectedIndex(index)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.95 }}
+                    variants={itemVariants}
+                  >
+                    <div className="client-thumbnail">
+                      <Image
+                        src={user.image}
+                        alt={user.name}
+                        width={50}
+                        height={50}
+                        className="rounded-full"
+                      />
+                    </div>
+                    <div className="client-intro">
+                      <h5
+                        className={`font-medium ${
+                          selectedIndex === index
+                            ? "text-purple-600"
+                            : "text-gray-700"
+                        }`}
+                      >
+                        {user.name}
+                      </h5>
+                      <small
+                        className={`text-sm ${
+                          selectedIndex === index
+                            ? "text-purple-400"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        {user.role}
+                      </small>
+                    </div>
+                  </motion.div>
+                ))
+              ) : (
                 <motion.div
-                  key={user.id}
-                  className={`
-      client-item rounded-lg transition-all duration-300 relative
-      ${
-        selectedUser.id === user.id
-          ? "scale-90 shadow-lg translate-x-4 bg-gray-100 border-3 border-purple-500 text-purple-500"
-          : "opacity-50 border-2 border-transparent"
-      }
-    `}
-                  onClick={() => setSelectedIndex(index)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="flex flex-col items-center justify-center h-64 bg-gray-100 rounded-lg"
                   variants={itemVariants}
                 >
-                  <div className="client-thumbnail">
-                    <Image
-                      src={user.img}
-                      alt={user.name}
-                      width={50}
-                      height={50}
-                      className="rounded-full"
-                    />
-                  </div>
-                  <div className="client-intro">
-                    <h5
-                      className={`font-medium ${
-                        selectedUser.id === user.id
-                          ? "text-purple-600"
-                          : "text-gray-700"
-                      }`}
-                    >
-                      {user.name}
-                    </h5>
-                    <small
-                      className={`text-sm ${
-                        selectedUser.id === user.id
-                          ? "text-purple-400"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      {user.role}
-                    </small>
-                  </div>
+                  <ChatBubbleLeftRightIcon className="w-12 h-12 text-gray-400 mb-4" />
+                  <p className="text-gray-500 text-lg">No testimonials yet</p>
                 </motion.div>
-              ))}
+              )}
+
+              {/* Add Testimonial Button */}
+              <motion.div
+                variants={itemVariants}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex justify-center items-center"
+              >
+                <AddTestimonialButton />
+              </motion.div>
             </motion.div>
           </div>
           <div className="show-info flex-1 w-full relative flex flex-col">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={selectedUser.id}
-                className="show-text p-6 rounded-lg w-full bg-white shadow-lg relative flex flex-col h-full"
-                variants={textVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-              >
-                {/* User Name and Role */}
-                <div className="mb-4">
-                  <h4 className="show-name text-2xl font-bold">
-                    {selectedUser.name}
-                  </h4>
-                  <small className="show-designation text-gray-600">
-                    {selectedUser.role}
-                  </small>
+              {isLoading ? (
+                <div className="mt-5">
+                  <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90 z-10 rounded-lg">
+                    <DualRingLoader fullScreen={false} size={50} />
+                  </div>
                 </div>
-
-                {/* Testimonial with Closing Quotes */}
-                <p className="show-description text-gray-800 mt-3 mb-8 relative text-lg italic flex items-start">
-                  <Image
-                    src="/images/opening-mark.png"
-                    alt="Opening Quote"
-                    width={30}
-                    height={30}
-                    className="mr-2"
-                  />
-                  <span className="flex-1">{selectedUser.testimonial}</span>
-                  <Image
-                    src="/images/opening-mark.png"
-                    alt="Closing Quote"
-                    width={30}
-                    height={30}
-                    className="ml-2 rotate-180"
-                  />
-                </p>
-
-                <ChatBubbleLeftRightIcon className="absolute right-5  top-5 w-8 h-8 text-purple-500" />
-                <div className="absolute bottom-4 right-4">
-                  <Image
-                    src={selectedUser.img}
-                    alt={selectedUser.name}
-                    width={100}
-                    height={100}
-                    className="rounded-full border-2 border-gray-300 shadow-md"
-                  />
-                </div>
-
-                {/* Inquire Button (Fixed at Bottom) */}
-                <div className="mt-auto">
-                  <Link
-                    href="#"
-                    className=" bg-purple-500 text-white px-6 py-2 rounded-full border-2 border-transparent hover:bg-white hover:text-purple-500 hover:border-purple-500 transition-all duration-300"
+              ) : (
+                <React.Fragment>
+                  <motion.div
+                    key={selectedUser.id}
+                    className="show-text p-6 rounded-lg w-full bg-white shadow-lg relative flex flex-col h-full"
+                    variants={textVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
                   >
-                    Inquire Now
-                  </Link>
-                </div>
-              </motion.div>
+                    {/* User Name and Role */}
+                    <div className="mb-4">
+                      <h4 className="show-name text-2xl font-bold">
+                        {selectedUser.name}
+                      </h4>
+                      <small className="show-designation text-gray-600 capitalize">
+                        {selectedUser.role}
+                      </small>
+                    </div>
+
+                    {/* Testimonial with Closing Quotes */}
+                    <p className="show-description text-gray-800 mt-3 mb-8 relative text-lg italic flex items-start">
+                      <span className="flex-1">{selectedUser.testimonial}</span>
+                      <Image
+                        src="/images/opening-mark.png"
+                        alt="Closing Quote"
+                        width={30}
+                        height={30}
+                        className="ml-2 rotate-180"
+                      />
+                    </p>
+
+                    <ChatBubbleLeftRightIcon className="absolute right-5  top-5 w-8 h-8 text-purple-500" />
+                    <div className="absolute bottom-4 right-4">
+                      <Image
+                        src={selectedUser.image}
+                        alt={selectedUser.name}
+                        width={100}
+                        height={100}
+                        className="rounded-full border-2 border-gray-300 shadow-md"
+                      />
+                    </div>
+
+                    {/* Inquire Button (Fixed at Bottom) */}
+                    <div className="mt-auto">
+                      <Link
+                        href="#"
+                        className=" bg-purple-500 text-white px-6 py-2 rounded-full border-2 border-transparent hover:bg-white hover:text-purple-500 hover:border-purple-500 transition-all duration-300"
+                      >
+                        Inquire Now
+                      </Link>
+                    </div>
+                  </motion.div>
+                </React.Fragment>
+              )}
             </AnimatePresence>
             {/* Navigation Dots */}
             <motion.div
