@@ -32,11 +32,12 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-
+    const isAdmin = session.user.role === 'admin';
     const newTestimonial = await TestimonialModel.create({
       user: session.user.id,
       role,
       testimonial,
+      approved:isAdmin
     });
 
     return NextResponse.json(newTestimonial, { status: 201 });
