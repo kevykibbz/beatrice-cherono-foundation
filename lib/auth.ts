@@ -6,6 +6,7 @@ import GoogleProvider from "next-auth/providers/google";
 import connectToDB from "./db";
 import bcrypt from "bcryptjs";
 import UserModel from "./models/User";
+import { hashPassword, comparePassword } from "@/utils/hashPassword";
 
 const adminEmails = [
   process.env.SITE_OWNER_EMAIL1,
@@ -13,7 +14,7 @@ const adminEmails = [
   process.env.SITE_OWNER_EMAIL13,
 ].filter(Boolean);
 const currentYear = new Date().getFullYear();
-const capitalizeFirstLetter: (str: string) => string = (str: string) =>
+const capitalizeFirstLetter = (str: string): string =>
   str.charAt(0).toUpperCase() + str.slice(1);
 
 export const authOptions: NextAuthOptions = {
@@ -27,7 +28,7 @@ export const authOptions: NextAuthOptions = {
           access_type: "offline",
           response_type: "code",
           scope: "openid email profile",
-          redirect_uri: process.env.NEXTAUTH_URL + '/api/auth/callback/google'
+          redirect_uri: process.env.NEXTAUTH_URL + "/api/auth/callback/google",
         },
       },
       profile(profile) {
@@ -46,37 +47,48 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         await connectToDB();
 
+        // Validate credentials exist
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Please provide both email and password");
+        }
+
         try {
+          // Find user with case-insensitive email
           const user = await UserModel.findOne({
-            email: credentials?.email,
-            provider: "credentials",
-          });
+            email: { $regex: new RegExp(`^${credentials.email}$`, "i") },
+            $or: [{ provider: "credentials" }, { provider: "google" }], // Check both providers
+          }).select("+password +role +provider");
 
           if (!user) {
-            throw new Error("No user found with this email");
+            throw new Error("Invalid credentials");
           }
 
-          const isValid = await bcrypt.compare(
-            credentials?.password || "",
+          // Verify password
+          const isMatch = await comparePassword(
+            credentials.password,
             user.password
           );
-
-          if (!isValid) {
-            throw new Error("Invalid password");
+          
+          if (!isMatch) {
+            throw new Error("Invalid credentials");
           }
 
+          // Return user object without sensitive data
           return {
             id: user._id.toString(),
             name: user.name,
             email: user.email,
             role: user.role,
+            image: user.image,
           };
         } catch (error) {
-          console.error("Credentials auth error:", error);
-          return null;
+          if (process.env.NODE_ENV === "production") {
+            throw new Error("Invalid credentials");
+          }
+          throw error;
         }
       },
     }),
@@ -111,14 +123,14 @@ export const authOptions: NextAuthOptions = {
             user.role = dbUser.role;
             return true;
           } else {
-            const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+            const hashed = await hashPassword(generatedPassword);
             dbUser = new UserModel({
               name: user.name || profile?.name || "Unknown",
               email: user.email,
               image: profile?.picture || user.image,
               provider: account.provider,
               role: isAdmin ? "admin" : "user",
-              password: hashedPassword,
+              password: hashed,
             });
 
             await dbUser.save();

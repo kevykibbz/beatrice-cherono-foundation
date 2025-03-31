@@ -14,11 +14,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useAuth } from "@/hooks/use-session";
+import { Eye, EyeOff } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -83,20 +84,38 @@ export function EmailLoginForm() {
           <FormField
             control={form.control}
             name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="••••••"
-                    {...field}
-                    className="py-3 px-4 h-13"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              const [showPassword, setShowPassword] = useState<boolean>(false);
+              
+              return (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <div className="relative">
+                    <FormControl>
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••"
+                        {...field}
+                        className="py-3 px-4 h-13 pr-10" // Added right padding for icon
+                      />
+                    </FormControl>
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5 text-gray-400 cursor-pointer" />
+                      ) : (
+                        <Eye className="h-5 w-5 text-gray-400 cursor-pointer" />
+                      )}
+                    </button>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
 
           <Button

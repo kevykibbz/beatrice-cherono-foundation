@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           error: "DUPLICATE_TESTIMONIAL",
-          message: "You have already submitted this testimonial",
+          message: "You have already submitted a testimonial",
         },
         { status: 400 }
       );
