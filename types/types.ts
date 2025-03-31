@@ -1,6 +1,7 @@
 import Mail from "nodemailer/lib/mailer";
 import { Session, User } from "next-auth";
-import { Document, Types } from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
+import { PermissionDocument } from "@/lib/models/Permission";
 
 export type LoaderTypes = {
   width?: number;
@@ -98,6 +99,7 @@ export interface IUser {
   provider: "google" | "credentials";
   role: string;
   image?: string;
+  permissions?: mongoose.Types.ObjectId[] | PermissionDocument[];
   createdAt?: Date;
   updatedAt?: Date;
 }

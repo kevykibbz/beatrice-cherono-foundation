@@ -32,7 +32,8 @@ export default function TestimonialsSection() {
   ): TestimonialsTypes[] => {
     if (!testimonials.length) return [DEFAULT_USER];
     return testimonials.map((testimonial) => {
-      const user =testimonial.user instanceof Types.ObjectId ? null : testimonial.user;
+      const user =
+        testimonial.user instanceof Types.ObjectId ? null : testimonial.user;
       return {
         id: testimonial._id.toString(),
         name: user?.name || "Anonymous",
@@ -131,7 +132,7 @@ export default function TestimonialsSection() {
                 >
                   <div className="relative h-full flex flex-col min-h-[400px]">
                     <div className="flex-grow overflow-y-auto">
-                      {users.length > 0 ? (
+                      {users[0]?.id !== "" && users.length > 0 ? (
                         users.map((user, index) => (
                           <motion.div
                             key={user.id}
@@ -199,59 +200,80 @@ export default function TestimonialsSection() {
                 </motion.div>
               </div>
               <div className="show-info flex-1 w-full relative flex flex-col">
-                <AnimatePresence mode="wait">
+                {selectedUser.id == "" ? (
                   <motion.div
-                    key={selectedUser.id}
-                    className="show-text p-6 rounded-lg w-full bg-white shadow-lg relative flex flex-col h-full"
-                    variants={textVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
+                    className="show-text p-6 rounded-lg w-full bg-gray-50 border-2 border-dashed border-gray-200 relative flex flex-col h-full items-center justify-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
                   >
-                    {/* User Name and Role */}
-                    <div className="mb-4">
-                      <h4 className="show-name text-2xl font-bold">
-                        {selectedUser.name}
+                    <div className="text-center max-w-md">
+                      <ChatBubbleLeftRightIcon className="mx-auto w-12 h-12 text-gray-400 mb-4" />
+                      <h4 className="text-xl font-medium text-gray-600 mb-2">
+                        No Testimonials Yet
                       </h4>
-                      <small className="show-designation text-gray-600 capitalize">
-                        {selectedUser.role}
-                      </small>
-                    </div>
-
-                    {/* Testimonial with Closing Quotes */}
-                    <p className="show-description text-gray-800 mt-3 mb-8 relative text-lg italic flex items-start">
-                      <span className="flex-1">{selectedUser.testimonial}</span>
-                      <Image
-                        src="/images/opening-mark.png"
-                        alt="Closing Quote"
-                        width={30}
-                        height={30}
-                        className="ml-2 rotate-180"
-                      />
-                    </p>
-
-                    <ChatBubbleLeftRightIcon className="absolute right-5  top-5 w-8 h-8 text-purple-500" />
-                    <div className="absolute bottom-4 right-4">
-                      <Image
-                        src={selectedUser.image}
-                        alt={selectedUser.name}
-                        width={100}
-                        height={100}
-                        className="rounded-full border-2 border-gray-300 shadow-md"
-                      />
-                    </div>
-
-                    {/* Inquire Button (Fixed at Bottom) */}
-                    <div className="mt-auto">
-                      <Link
-                        href={`mailto:${selectedUser.email}`}
-                        className=" bg-purple-500 text-white px-6 py-2 rounded-full border-2 border-transparent hover:bg-white hover:text-purple-500 hover:border-purple-500 transition-all duration-300"
-                      >
-                        Inquire Now
-                      </Link>
+                      <p className="text-gray-500 mb-6">
+                        Be the first to share your experience with us!
+                      </p>
                     </div>
                   </motion.div>
-                </AnimatePresence>
+                ) : (
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={selectedUser.id}
+                      className="show-text p-6 rounded-lg w-full bg-white shadow-lg relative flex flex-col h-full"
+                      variants={textVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                    >
+                      {/* User Name and Role */}
+                      <div className="mb-4">
+                        <h4 className="show-name text-2xl font-bold">
+                          {selectedUser.name}
+                        </h4>
+                        <small className="show-designation text-gray-600 capitalize">
+                          {selectedUser.role}
+                        </small>
+                      </div>
+
+                      {/* Testimonial with Closing Quotes */}
+                      <p className="show-description text-gray-800 mt-3 mb-8 relative text-lg italic flex items-start">
+                        <span className="flex-1">
+                          {selectedUser.testimonial}
+                        </span>
+                        <Image
+                          src="/images/opening-mark.png"
+                          alt="Closing Quote"
+                          width={30}
+                          height={30}
+                          className="ml-2 rotate-180"
+                        />
+                      </p>
+
+                      <ChatBubbleLeftRightIcon className="absolute right-5  top-5 w-8 h-8 text-purple-500" />
+                      <div className="absolute bottom-4 right-4">
+                        <Image
+                          src={selectedUser.image}
+                          alt={selectedUser.name}
+                          width={100}
+                          height={100}
+                          className="rounded-full border-2 border-gray-300 shadow-md"
+                        />
+                      </div>
+
+                      {/* Inquire Button (Fixed at Bottom) */}
+                      <div className="mt-auto">
+                        <Link
+                          href={`mailto:${selectedUser.email}`}
+                          className=" bg-purple-500 text-white px-6 py-2 rounded-full border-2 border-transparent hover:bg-white hover:text-purple-500 hover:border-purple-500 transition-all duration-300"
+                        >
+                          Inquire Now
+                        </Link>
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+                )}
               </div>
             </React.Fragment>
           )}

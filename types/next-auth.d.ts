@@ -22,6 +22,7 @@ declare module "next-auth" {
     given_name?: string;
     family_name?: string;
   }
+  
 }
 
 declare module "next-auth/jwt" {

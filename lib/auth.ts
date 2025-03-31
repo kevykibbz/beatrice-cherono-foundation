@@ -6,6 +6,9 @@ import GoogleProvider from "next-auth/providers/google";
 import connectToDB from "./db";
 import UserModel from "./models/User";
 import { hashPassword, comparePassword } from "@/utils/hashPassword";
+import { setupDefaultPermissions } from "@/utils/permission";
+import { ActivityLogger } from "@/services/activity.service";
+import { NextApiRequest } from "next";
 
 const adminEmails = [
   process.env.SITE_OWNER_EMAIL1,
@@ -46,7 +49,7 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         await connectToDB();
 
         // Validate credentials exist
@@ -58,7 +61,7 @@ export const authOptions: NextAuthOptions = {
           // Find user with case-insensitive email
           const user = await UserModel.findOne({
             email: { $regex: new RegExp(`^${credentials.email}$`, "i") },
-            $or: [{ provider: "credentials" }, { provider: "google" }], // Check both providers
+            $or: [{ provider: "credentials" }, { provider: "google" }],
           }).select("+password +role +provider");
 
           if (!user) {
@@ -70,12 +73,17 @@ export const authOptions: NextAuthOptions = {
             credentials.password,
             user.password
           );
-          
+
           if (!isMatch) {
             throw new Error("Invalid credentials");
           }
 
-          // Return user object without sensitive data
+          // Log successful credentials login
+          await ActivityLogger.logLogin(
+            user._id.toString(),
+            req as NextApiRequest
+          );
+
           return {
             id: user._id.toString(),
             name: user.name,
@@ -94,10 +102,7 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
-    maxAge: 24 * 60 * 60, // 24 hours in seconds
-  },
-  jwt: {
-    maxAge: 24 * 60 * 60, // 24 hours in seconds
+    maxAge: 24 * 60 * 60, // 24 hours
   },
   callbacks: {
     async signIn({ user, account, profile }) {
@@ -120,9 +125,9 @@ export const authOptions: NextAuthOptions = {
             }
             user.id = dbUser._id.toString();
             user.role = dbUser.role;
-            return true;
           } else {
             const hashed = await hashPassword(generatedPassword);
+            const adminPermissions = await setupDefaultPermissions();
             dbUser = new UserModel({
               name: user.name || profile?.name || "Unknown",
               email: user.email,
@@ -130,6 +135,7 @@ export const authOptions: NextAuthOptions = {
               provider: account.provider,
               role: isAdmin ? "admin" : "user",
               password: hashed,
+              ...(isAdmin && { permissions: adminPermissions }),
             });
 
             await dbUser.save();

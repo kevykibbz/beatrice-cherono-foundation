@@ -1,10 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import TestimonialModel from "@/lib/models/Testimonials";
 import connectToDB from "@/lib/db";
+import { ActivityLogger } from "@/services/activity.service";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     await connectToDB();
     const session = await getServerSession(authOptions);
@@ -40,6 +41,12 @@ export async function POST(request: Request) {
       approved:isAdmin
     });
 
+    await ActivityLogger.logTestimonialAdd(
+      session.user.id,
+      newTestimonial._id.toString(),
+      request
+    );
+    
     return NextResponse.json(newTestimonial, { status: 201 });
   } catch (error) {
     console.error("Testimonial submission error:", error);

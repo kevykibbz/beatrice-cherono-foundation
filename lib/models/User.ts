@@ -1,5 +1,13 @@
 import { IUser } from "@/types/types";
 import mongoose from "mongoose";
+import { PermissionDocument } from "./Permission";
+
+// Extend IUser type with permissions
+declare module "@/types/types" {
+  interface IUser {
+    permissions?: mongoose.Types.ObjectId[] | PermissionDocument[];
+  }
+}
 
 let UserModel: mongoose.Model<IUser>;
 
@@ -23,6 +31,11 @@ try {
         default: "user",
       },
       image: { type: String, required: false },
+      permissions: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Permission",
+        default: []
+      }]
     },
     { timestamps: true }
   );
