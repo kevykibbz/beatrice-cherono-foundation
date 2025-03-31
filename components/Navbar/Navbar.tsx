@@ -61,7 +61,7 @@ const Navbar: React.FC = () => {
                   : "top-[-100%] opacity-0 translate-y-[-100%] delay-100 md:opacity-100 md:translate-y-0 md:top-auto"
               }`}
             >
-              <ul className="flex md:flex-row flex-col md:items-center md:gap-[4vh] gap-6 text-base md:text-lg lg:text-xl my-6 md:my-0">
+              <ul className="flex md:flex-row flex-col md:items-center md:gap-[4vh] gap-6 text-base md lg:text-xl my-6 md:my-0">
                 {paths.map((link, index) => (
                   <li key={index}>
                     <Link

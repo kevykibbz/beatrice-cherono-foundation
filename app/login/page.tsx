@@ -13,20 +13,23 @@ export default function Login() {
     {
       image: "/images/ngo1.jpg",
       title: "Empowering Communities",
-      description:
-        "Join us in creating sustainable change for underserved populations",
+      description: "Join us in creating sustainable change through education, economic opportunities, and social programs that lift underserved populations out of poverty and into self-sufficiency."
     },
     {
       image: "/images/ngo2.jpg",
       title: "Education for All",
-      description:
-        "Support our mission to provide quality education to every child",
+      description: "Support our mission to provide quality education to every child, building schools, training teachers, and supplying learning materials in communities where access is limited."
     },
     {
       image: "/images/ngo3.jpg",
       title: "Healthcare Access",
-      description: "Help us bring medical care to remote communities",
+      description: "Help us bring essential medical care to remote communities through mobile clinics, vaccination programs, and health education initiatives that save lives daily."
     },
+    {
+      image: "/images/ngo4.jpg",
+      title: "Sustainable Development",
+      description: "Our holistic approach combines clean water projects, agricultural training, and renewable energy solutions to create lasting change for future generations."
+    }
   ];
 
   // Animation variants
@@ -55,9 +58,9 @@ export default function Login() {
 
   return (
     <React.Fragment>
-      <div className="flex flex-col md:flex-row h-[600px] max-h-screen bg-white">
+      <div className="flex flex-col md:flex-row h-[500px] max-h-screen bg-white">
         {/* Left Side - Compact Login Form */}
-        <div className="w-full md:w-1/2 p-6 md:p-8 flex items-center justify-center">
+        <div className="w-full md:w-1/2 p-6 md:p-8 flex items-center justify-center h-full">
           <div className="w-full max-w-md">
             <motion.div
               initial={{ opacity: 0, y: -20 }}
@@ -90,7 +93,7 @@ export default function Login() {
         </div>
 
         {/* Right Side - Contained Card Slider */}
-        <div className="hidden md:block w-full md:w-1/2 p-4 items-center justify-center">
+        <div className="hidden md:flex w-full md:w-1/2 p-4 items-center justify-center h-full">
           <div className="relative h-full w-full max-w-2xl rounded-xl overflow-hidden shadow-lg">
             <AnimatePresence mode="wait">
               {slides.map(
