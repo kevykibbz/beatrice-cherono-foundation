@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import TestimonialModel from "@/lib/models/Testimonials";
+import {UserModel,TestimonialModel} from "@/lib/models";
 import connectToDB from "@/lib/db";
 
 export async function GET(request: Request) {
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
       .populate({
         path: "user",
         select: "name email image role",
-        model: "User", // Explicitly specify the model (optional but good practice)
+        model: UserModel, 
       })
       .exec();
 

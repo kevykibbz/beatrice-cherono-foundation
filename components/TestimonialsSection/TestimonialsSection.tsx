@@ -14,6 +14,7 @@ import DualRingLoader from "../Loader/DualRingLoader";
 const DEFAULT_USER: TestimonialsTypes = {
   id: "",
   name: "Loading...",
+  email: "Loading...",
   role: "Loading...",
   image: "/images/profile.png",
   testimonial: "Loading...",
@@ -31,12 +32,11 @@ export default function TestimonialsSection() {
   ): TestimonialsTypes[] => {
     if (!testimonials.length) return [DEFAULT_USER];
     return testimonials.map((testimonial) => {
-      const user =
-        testimonial.user instanceof Types.ObjectId ? null : testimonial.user;
-
+      const user =testimonial.user instanceof Types.ObjectId ? null : testimonial.user;
       return {
         id: testimonial._id.toString(),
         name: user?.name || "Anonymous",
+        email: user?.email,
         role: testimonial.role,
         image: user?.image || "/images/profile.png",
         testimonial: testimonial.testimonial,
@@ -113,93 +113,93 @@ export default function TestimonialsSection() {
           meaningful change.
         </p>
         <div className="content">
-          {/* Clients List */}
-          <div className="clients-list">
-            <motion.div
-              className="clients-tabs space-y-4"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              {users.length > 0 ? (
-                users.map((user, index) => (
-                  <motion.div
-                    key={user.id}
-                    className={`
-        client-item rounded-lg transition-all duration-300 relative
-        ${
-          selectedIndex === index
-            ? "scale-90 shadow-lg translate-x-4 bg-gray-100 border-3 border-purple-500 text-purple-500"
-            : "opacity-50 border-2 border-transparent"
-        }
-      `}
-                    onClick={() => setSelectedIndex(index)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.95 }}
-                    variants={itemVariants}
-                  >
-                    <div className="client-thumbnail">
-                      <Image
-                        src={user.image}
-                        alt={user.name}
-                        width={50}
-                        height={50}
-                        className="rounded-full"
-                      />
-                    </div>
-                    <div className="client-intro">
-                      <h5
-                        className={`font-medium ${
-                          selectedIndex === index
-                            ? "text-purple-600"
-                            : "text-gray-700"
-                        }`}
-                      >
-                        {user.name}
-                      </h5>
-                      <small
-                        className={`text-sm ${
-                          selectedIndex === index
-                            ? "text-purple-400"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        {user.role}
-                      </small>
-                    </div>
-                  </motion.div>
-                ))
-              ) : (
+          {isLoading ? (
+            <div className="mt-5 flex-1 w-full relative flex flex-col min-h-[300px]">
+              <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90 z-10 rounded-lg">
+                <DualRingLoader fullScreen={false} size={50} />
+              </div>
+            </div>
+          ) : (
+            <React.Fragment>
+              {/* Clients List */}
+              <div className="clients-list">
                 <motion.div
-                  className="flex flex-col items-center justify-center h-64 bg-gray-100 rounded-lg"
-                  variants={itemVariants}
+                  className="clients-tabs space-y-4"
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
                 >
-                  <ChatBubbleLeftRightIcon className="w-12 h-12 text-gray-400 mb-4" />
-                  <p className="text-gray-500 text-lg">No testimonials yet</p>
-                </motion.div>
-              )}
+                  <div className="relative h-full flex flex-col min-h-[400px]">
+                    <div className="flex-grow overflow-y-auto">
+                      {users.length > 0 ? (
+                        users.map((user, index) => (
+                          <motion.div
+                            key={user.id}
+                            className={`
+                    client-item rounded-lg transition-all duration-300 relative
+                    ${
+                      selectedIndex === index
+                        ? "scale-90 shadow-lg translate-x-4 bg-gray-100 border-3 border-purple-500 text-purple-500"
+                        : "opacity-50 border-2 border-transparent"
+                    }
+                  `}
+                            onClick={() => setSelectedIndex(index)}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.95 }}
+                            variants={itemVariants}
+                          >
+                            <div className="client-thumbnail">
+                              <Image
+                                src={user.image}
+                                alt={user.name}
+                                width={50}
+                                height={50}
+                                className="rounded-full"
+                              />
+                            </div>
+                            <div className="client-intro">
+                              <h5
+                                className={`font-medium ${
+                                  selectedIndex === index
+                                    ? "text-purple-600"
+                                    : "text-gray-700"
+                                }`}
+                              >
+                                {user.name}
+                              </h5>
+                              <small
+                                className={`text-sm ${
+                                  selectedIndex === index
+                                    ? "text-purple-400"
+                                    : "text-gray-500"
+                                }`}
+                              >
+                                {user.role}
+                              </small>
+                            </div>
+                          </motion.div>
+                        ))
+                      ) : (
+                        <motion.div
+                          className="flex flex-col items-center justify-center h-64 bg-gray-100 rounded-lg"
+                          variants={itemVariants}
+                        >
+                          <ChatBubbleLeftRightIcon className="w-12 h-12 text-gray-400 mb-4" />
+                          <p className="text-gray-500 text-lg">
+                            No testimonials yet
+                          </p>
+                        </motion.div>
+                      )}
+                    </div>
 
-              {/* Add Testimonial Button */}
-              <motion.div
-                variants={itemVariants}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex justify-center items-center"
-              >
-                <AddTestimonialButton />
-              </motion.div>
-            </motion.div>
-          </div>
-          <div className="show-info flex-1 w-full relative flex flex-col">
-            <AnimatePresence mode="wait">
-              {isLoading ? (
-                <div className="mt-5">
-                  <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90 z-10 rounded-lg">
-                    <DualRingLoader fullScreen={false} size={50} />
+                    <div className="sticky bottom-3 pt-4 flex justify-center items-baseline">
+                      <AddTestimonialButton />
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <React.Fragment>
+                </motion.div>
+              </div>
+              <div className="show-info flex-1 w-full relative flex flex-col">
+                <AnimatePresence mode="wait">
                   <motion.div
                     key={selectedUser.id}
                     className="show-text p-6 rounded-lg w-full bg-white shadow-lg relative flex flex-col h-full"
@@ -244,37 +244,17 @@ export default function TestimonialsSection() {
                     {/* Inquire Button (Fixed at Bottom) */}
                     <div className="mt-auto">
                       <Link
-                        href="#"
+                        href={`mailto:${selectedUser.email}`}
                         className=" bg-purple-500 text-white px-6 py-2 rounded-full border-2 border-transparent hover:bg-white hover:text-purple-500 hover:border-purple-500 transition-all duration-300"
                       >
                         Inquire Now
                       </Link>
                     </div>
                   </motion.div>
-                </React.Fragment>
-              )}
-            </AnimatePresence>
-            {/* Navigation Dots */}
-            <motion.div
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 50, opacity: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2"
-            >
-              {users.map((_, index) => (
-                <button
-                  key={index}
-                  className={`cursor-pointer w-3 h-3 rounded-full transition-all duration-300 shadow-md ${
-                    selectedIndex === index
-                      ? "bg-purple-500 shadow-purple-500/50 scale-110"
-                      : "bg-gray-300 shadow-gray-400/50 hover:shadow-lg"
-                  }`}
-                  onClick={() => setSelectedIndex(index)}
-                />
-              ))}
-            </motion.div>
-          </div>
+                </AnimatePresence>
+              </div>
+            </React.Fragment>
+          )}
         </div>
       </div>
     </div>
