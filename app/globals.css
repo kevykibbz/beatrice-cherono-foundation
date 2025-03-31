@@ -95,8 +95,8 @@ body {
 }
 
 .page-header {
-  padding-top: 12rem; /* pt-48 in Tailwind */
-  padding-bottom: 6rem; /* pb-24 in Tailwind */
+  padding-top:2rem; /* pt-48 in Tailwind */
+  padding-bottom: 3rem; /* pb-24 in Tailwind */
   background: linear-gradient(rgba(0, 29, 35, 0.8), rgba(0, 29, 35, 0.8)),
     url(/images/carousel-1.jpg) center center no-repeat;
   background-size: cover;
@@ -190,4 +190,8 @@ body {
 
 .animate-progress-timer {
   animation: progress-timer 5s linear forwards;
+}
+
+.clip-tear {
+  clip-path: polygon(100% 0, 0% 100%, 100% 100%);
 }
