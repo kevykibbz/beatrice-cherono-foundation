@@ -4,7 +4,6 @@ import type { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import connectToDB from "./db";
-import bcrypt from "bcryptjs";
 import UserModel from "./models/User";
 import { hashPassword, comparePassword } from "@/utils/hashPassword";
 
@@ -47,7 +46,7 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         await connectToDB();
 
         // Validate credentials exist

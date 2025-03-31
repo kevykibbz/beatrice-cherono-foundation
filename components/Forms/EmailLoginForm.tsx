@@ -27,6 +27,7 @@ const formSchema = z.object({
 });
 
 export function EmailLoginForm() {
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated } = useAuth();
@@ -84,9 +85,7 @@ export function EmailLoginForm() {
           <FormField
             control={form.control}
             name="password"
-            render={({ field }) => {
-              const [showPassword, setShowPassword] = useState<boolean>(false);
-              
+            render={({ field }) => {              
               return (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
