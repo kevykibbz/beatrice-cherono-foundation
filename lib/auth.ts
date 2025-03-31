@@ -27,6 +27,7 @@ export const authOptions: NextAuthOptions = {
           access_type: "offline",
           response_type: "code",
           scope: "openid email profile",
+          redirect_uri: process.env.NEXTAUTH_URL + '/api/auth/callback/google'
         },
       },
       profile(profile) {
