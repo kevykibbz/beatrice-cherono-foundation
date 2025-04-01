@@ -1,19 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import { Suspense } from "react";
 import { Toaster } from "react-hot-toast";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { AuthProvider } from "../(root)/providers/auth-provider";
-import { Loading } from "../Loading";
-import BackToTop from "@/components/panel/BackToTop/ToTop";
-import Header from "@/components/panel/Header/index";
-import "../globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
+import BackToTop from "@/components/BackToTop/ToTop";
+import { Suspense } from "react";
+import Loading from "./loading";
+import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.beatricecheronomellyfoundation.org"),
@@ -26,33 +16,25 @@ export const metadata: Metadata = {
 export default async function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const session = await getServerSession(authOptions);
-
   return (
-    <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased`}>
-        <AuthProvider session={session}>
-          <Suspense fallback={<Loading />}>
-            <div className="min-h-screen flex flex-col">
-              <Header />
-              <main className="flex-grow">{children}</main>
-              {/* <BackToTop /> */}
-              <BackToTop />
-            </div>
-            <Toaster
-              position="top-center"
-              toastOptions={{
-                duration: 4000,
-                success: {
-                  duration: 3000,
-                },
-                error: {
-                  duration: 5000,
-                },
-              }}
-            />
-          </Suspense>
-        </AuthProvider>
+    <html lang="en" suppressHydrationWarning={true}>
+      <body className="bg-gray-100 font-poppins dark:bg-background_dark">
+        <Suspense fallback={<Loading />}>
+          {children}
+          <BackToTop />
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              duration: 4000,
+              success: {
+                duration: 3000,
+              },
+              error: {
+                duration: 5000,
+              },
+            }}
+          />
+        </Suspense>
       </body>
     </html>
   );

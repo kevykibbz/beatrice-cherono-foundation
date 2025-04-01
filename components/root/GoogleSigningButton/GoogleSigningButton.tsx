@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
 import { useAuth } from "@/hooks/use-session";
 

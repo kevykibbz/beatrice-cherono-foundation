@@ -3,12 +3,11 @@ import { Session, User } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import connectToDB from "./db";
-import UserModel from "./models/User";
 import { hashPassword, comparePassword } from "@/utils/hashPassword";
 import { setupDefaultPermissions } from "@/utils/permission";
 import { ActivityLogger } from "@/services/activity.service";
 import { NextApiRequest } from "next";
+import { prisma } from "@/lib/db"; 
 
 const adminEmails = [
   process.env.SITE_OWNER_EMAIL1,
@@ -50,8 +49,6 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        await connectToDB();
-
         // Validate credentials exist
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Please provide both email and password");
@@ -59,12 +56,15 @@ export const authOptions: NextAuthOptions = {
 
         try {
           // Find user with case-insensitive email
-          const user = await UserModel.findOne({
-            email: { $regex: new RegExp(`^${credentials.email}$`, "i") },
-            $or: [{ provider: "credentials" }, { provider: "google" }],
-          }).select("+password +role +provider");
+          const user = await prisma.user.findFirst({
+            where: {
+              email: { equals: credentials.email, mode: "insensitive" },
+              OR: [{ provider: "credentials" }, { provider: "google" }],
+            },
+            include: { permissions: true }
+          });
 
-          if (!user) {
+          if (!user || !user.password) {
             throw new Error("Invalid credentials");
           }
 
@@ -80,16 +80,17 @@ export const authOptions: NextAuthOptions = {
 
           // Log successful credentials login
           await ActivityLogger.logLogin(
-            user._id.toString(),
+            user.id,
             req as NextApiRequest
           );
 
           return {
-            id: user._id.toString(),
+            id: user.id,
             name: user.name,
             email: user.email,
             role: user.role,
             image: user.image,
+            permissions: user.permissions
           };
         } catch (error) {
           if (process.env.NODE_ENV === "production") {
@@ -108,38 +109,43 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile }) {
       if (account?.provider === "google") {
         try {
-          await connectToDB();
-
-          const isAdmin = adminEmails.includes(user.email?.toLowerCase());
+          const isAdmin = adminEmails.includes(user.email?.toLowerCase() || "");
           const generatedPassword = isAdmin
             ? `Admin@${currentYear}`
             : `${capitalizeFirstLetter(
                 user.email?.split("@")[0] || ""
               )}@${currentYear}`;
 
-          let dbUser = await UserModel.findOne({ email: user.email });
+          let dbUser = await prisma.user.findUnique({
+            where: { email: user.email || undefined }
+          });
 
           if (dbUser) {
             if (dbUser.provider !== "google") {
               throw new Error("This email is already registered with password");
             }
-            user.id = dbUser._id.toString();
+            user.id = dbUser.id;
             user.role = dbUser.role;
           } else {
             const hashed = await hashPassword(generatedPassword);
             const adminPermissions = await setupDefaultPermissions();
-            dbUser = new UserModel({
-              name: user.name || profile?.name || "Unknown",
-              email: user.email,
-              image: profile?.picture || user.image,
-              provider: account.provider,
-              role: isAdmin ? "admin" : "user",
-              password: hashed,
-              ...(isAdmin && { permissions: adminPermissions }),
+            
+            dbUser = await prisma.user.create({
+              data: {
+                name: user.name || profile?.name || "Unknown",
+                email: user.email || "",
+                image: profile?.picture || user.image,
+                provider: account.provider,
+                role: isAdmin ? "admin" : "user",
+                password: hashed,
+                permissions: {
+                  connect: isAdmin ? adminPermissions.map(p => ({ id: p.id })) : []
+                }
+              },
+              include: { permissions: true }
             });
 
-            await dbUser.save();
-            user.id = dbUser._id.toString();
+            user.id = dbUser.id;
             user.role = dbUser.role;
           }
 
@@ -157,6 +163,9 @@ export const authOptions: NextAuthOptions = {
           ...session.user,
           id: token.user?.id as string,
           role: token.user?.role || "user",
+          ...(token.user?.role === 'admin' && { 
+            permissions: token.user?.permissions || [] 
+          })
         };
       }
       return session;
@@ -170,6 +179,9 @@ export const authOptions: NextAuthOptions = {
           image: user.image ?? undefined,
           role: user.role,
           provider: user.provider,
+          ...(token.user?.role === 'admin' && { 
+            permissions: token.user?.permissions || [] 
+          })
         };
       }
       return token;

@@ -1,6 +1,5 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import "./Testimonials.css";
 import Image from "next/image";
 import { ITestimonial, TestimonialsTypes } from "@/types/types";
 import Link from "next/link";
@@ -10,6 +9,7 @@ import { AddTestimonialButton } from "./AddTestimonialButton/AddTestimonialButto
 import { Types } from "mongoose";
 import React from "react";
 import DualRingLoader from "../Loader/DualRingLoader";
+import "./Testimonials.css";
 
 const DEFAULT_USER: TestimonialsTypes = {
   id: "",
@@ -35,7 +35,7 @@ export default function TestimonialsSection() {
       const user =
         testimonial.user instanceof Types.ObjectId ? null : testimonial.user;
       return {
-        id: testimonial._id.toString(),
+        id: testimonial.id,
         name: user?.name || "Anonymous",
         email: user?.email,
         role: testimonial.role,

@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Suspense } from "react";
-import { Loading } from "./Loading";
-import Footer from "@/components/root/Footer/Footer";
-import Navbar from "@/components/root/Navbar/Navbar";
+import { Loading } from "../(root)/Loading";
 import { Toaster } from "react-hot-toast";
 import Consent from "@/components/root/CookieConsent/Consent";
-import Script from "next/script";
 import BackToTop from "@/components/BackToTop/ToTop";
-import { AuthProvider } from "./providers/auth-provider";
+import Script from "next/script";
+import { AuthProvider } from "../(root)/providers/auth-provider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import './globals.css'
+import '../(root)/globals.css'
 
 const inter = Inter({
   subsets: ["latin"],
@@ -77,16 +75,14 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions);
 
   return (
-    <html lang="en" suppressHydrationWarning={true}>
+    <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
         <AuthProvider session={session}>
           <Suspense fallback={<Loading />}>
             <div className="min-h-screen flex flex-col">
-              <Navbar />
               <main className="flex-grow">{children}</main>
               <BackToTop />
               <Consent />
-              <Footer />
             </div>
             <Toaster 
              position="top-center"

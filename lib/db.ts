@@ -1,105 +1,23 @@
-import mongoose from "mongoose";
+import { PrismaClient } from '@prisma/client';
 
-const MONGODB_URI = process.env.MONGODB_URI as string;
+// Type-safe global prisma instance
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
-if (!MONGODB_URI) {
-  throw new Error("Please define the MONGODB_URI environment variable");
+// Initialize PrismaClient
+const prisma = globalForPrisma.prisma ?? new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+});
+
+// Store in globalThis in development to prevent hot-reload issues
+if (process.env.NODE_ENV === 'development') {
+  globalForPrisma.prisma = prisma;
 }
 
-// Define the type for our mongoose cache
-interface MongooseCache {
-  conn: typeof mongoose | null;
-  promise: Promise<typeof mongoose> | null;
-}
+// Cleanup on exit 
+process.on('beforeExit', async () => {
+  await prisma.$disconnect();
+});
 
-// Type for our extended global
-interface CustomGlobal {
-  mongoose: MongooseCache;
-}
-
-// Initialize the cache with proper type assertion
-const globalWithMongoose = global as unknown as CustomGlobal;
-
-let cached = globalWithMongoose.mongoose;
-
-if (!cached) {
-  globalWithMongoose.mongoose = { conn: null, promise: null };
-  cached = globalWithMongoose.mongoose;
-}
-
-interface DBHealthDetails {
-  dbName?: string;
-  readyState?: number;
-  dbHost?: string;
-  dbPort?: number;
-}
-
-interface DBHealthResponse {
-  isHealthy: boolean;
-  details?: DBHealthDetails;
-  error?: string;
-}
-
-async function connectToDB(): Promise<typeof mongoose> {
-  if (cached.conn) {
-    // Verify the existing connection is still alive
-    if (cached.conn.connection.readyState === 1) {
-      try {
-        if (cached.conn.connection.db) {
-          await cached.conn.connection.db.admin().ping();
-          return cached.conn;
-        }
-      } catch {
-        // If ping fails, clear cache and reconnect
-        cached.conn = null;
-      }
-    }
-  }
-
-  if (!cached.promise) {
-    const opts: mongoose.ConnectOptions = {
-      bufferCommands: false,
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-    };
-
-    cached.promise = mongoose.connect(MONGODB_URI, opts);
-  }
-
-  try {
-    cached.conn = await cached.promise;
-    if (cached.conn.connection.db) {
-      await cached.conn.connection.db.admin().ping();
-    }
-    return cached.conn;
-  } catch (e) {
-    cached.promise = null;
-    throw e;
-  }
-}
-
-export async function checkDBHealth(): Promise<DBHealthResponse> {
-  try {
-    const conn = await connectToDB();
-    if (!conn.connection.db) {
-      return { isHealthy: false, error: "Database not initialized" };
-    }
-    await conn.connection.db.admin().ping();
-    return {
-      isHealthy: true,
-      details: {
-        dbName: conn.connection.name,
-        readyState: conn.connection.readyState,
-        dbHost: conn.connection.host,
-        dbPort: conn.connection.port,
-      },
-    };
-  } catch (error) {
-    return {
-      isHealthy: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-  }
-}
-
-export default connectToDB;
+export { prisma };

@@ -2,7 +2,7 @@
 
 import Header from "@/components/root/Header/Header";
 import { TestimonialForm } from "@/components/root/Forms/TestimonialForm";
-import { Button } from "@/components/root/ui/button";
+import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";

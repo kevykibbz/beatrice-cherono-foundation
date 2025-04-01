@@ -10,9 +10,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/root/ui/form";
-import { Input } from "@/components/root/ui/input";
-import { Button } from "@/components/root/ui/button";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import React, { useState } from "react";
 import { signIn } from "next-auth/react";

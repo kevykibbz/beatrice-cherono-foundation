@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/root/ui/button";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useWindowSize } from "@/hooks/useWindowSize";
 import { AddTestimonialModal } from "../AddTestimonialModal";

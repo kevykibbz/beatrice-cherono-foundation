@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import React, { useState } from "react";
-import { Input } from "../ui/input";
+import { Input } from "@/components/ui/input";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { DonatePageTypes } from "@/types/types";
 

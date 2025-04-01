@@ -7,7 +7,7 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from "@/components/root/ui/breadcrumb";
+} from "@/components/ui/breadcrumb";
 
 const BreadcrumbHeader: React.FC<PageTypes> = ({ title = "" }) => {
   return (

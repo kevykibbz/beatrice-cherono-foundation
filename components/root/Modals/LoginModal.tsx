@@ -5,7 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/root/ui/dialog";
+} from "@/components/ui/dialog";
 import { EmailLoginForm } from "@/components/root/Forms/EmailLoginForm";
 import GoogleSigningButton from "../GoogleSigningButton/GoogleSigningButton";
 

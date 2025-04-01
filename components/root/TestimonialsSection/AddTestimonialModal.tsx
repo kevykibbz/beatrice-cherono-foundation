@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/root/ui/dialog";
+} from "@/components/ui/dialog";
 import { TestimonialForm } from "../Forms/TestimonialForm";
 
 interface AddTestimonialModalProps {

@@ -6,8 +6,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/root/ui/dialog";
-import { Button } from "@/components/root/ui/button";
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { signOut } from "next-auth/react";
 
 interface SignOutModalProps {

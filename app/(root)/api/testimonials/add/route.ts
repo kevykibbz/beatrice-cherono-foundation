@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import TestimonialModel from "@/lib/models/Testimonials";
-import connectToDB from "@/lib/db";
+import { prisma } from "@/lib/db"; 
 import { ActivityLogger } from "@/services/activity.service";
 
 export async function POST(request: NextRequest) {
   try {
-    await connectToDB();
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
@@ -18,10 +16,13 @@ export async function POST(request: NextRequest) {
     }
 
     const { role, testimonial } = await request.json();
+    const isAdmin = session.user.role === 'admin';
 
     // Check for existing testimonial from this user
-    const existingTestimonial = await TestimonialModel.findOne({
-      user: session.user.id,
+    const existingTestimonial = await prisma.testimonial.findFirst({
+      where: {
+        userId: session.user.id
+      }
     });
 
     if (existingTestimonial) {
@@ -33,17 +34,20 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    const isAdmin = session.user.role === 'admin';
-    const newTestimonial = await TestimonialModel.create({
-      user: session.user.id,
-      role,
-      testimonial,
-      approved:isAdmin
+
+    // Create new testimonial
+    const newTestimonial = await prisma.testimonial.create({
+      data: {
+        userId: session.user.id,
+        role,
+        testimonial,
+        approved: isAdmin // Auto-approve if admin
+      }
     });
 
     await ActivityLogger.logTestimonialAdd(
       session.user.id,
-      newTestimonial._id.toString(),
+      newTestimonial.id,
       request
     );
     
