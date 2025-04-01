@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export async function GET(request: Request) {
   try {
@@ -18,10 +20,14 @@ export async function GET(request: Request) {
       }
     }
 
+    const session = await getServerSession(authOptions);
+    const isAdmin = session?.user?.role === "admin";
+
     const approvedOnly = searchParams.get("approved")?.toLowerCase() === "true";
     const testimonials = await prisma.testimonial.findMany({
       where: { approved: approvedOnly },
       orderBy: { createdAt: "desc" },
+      take: isAdmin ? undefined : 6, // Limit to 6 if not admin
       include: {
         user: {
           select: {

@@ -18,6 +18,7 @@ import { toast } from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-session";
 import { useEffect } from "react";
+import { useAddTestimonial } from "@/hooks/useTestimonials";
 
 const testimonialFormSchema = z.object({
   name: z.string().min(2, {
@@ -37,6 +38,7 @@ interface TestimonialFormProps {
 
 export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
   const { user } = useAuth();
+  const { mutateAsync: addTestimonial } = useAddTestimonial();
   const form = useForm<z.infer<typeof testimonialFormSchema>>({
     resolver: zodResolver(testimonialFormSchema),
     defaultValues: {
@@ -45,54 +47,26 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
       testimonial: "",
     },
   });
-
   useEffect(() => {
     if (user?.name) {
       form.setValue("name", user.name, { shouldValidate: true });
     }
-  }, [user?.name, form,form.setValue]);
+  }, [user?.name, form, form.setValue]);
 
   async function onSubmit(values: z.infer<typeof testimonialFormSchema>) {
-    const submitPromise = new Promise(async (resolve, reject) => {
-      try {
-        const response = await fetch("/api/testimonials/add", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        });
-
-        const data = await response.json();
-        if (!response.ok) {
-          if (data.error === "DUPLICATE_TESTIMONIAL") {
-            throw new Error(data.message);
-          }
-          throw new Error(data.message || "Failed to submit testimonial");
-        }
-
-        resolve("Testimonial submitted successfully!");
-      } catch (error) {
-        reject(error instanceof Error ? error.message : "Something went wrong");     
-      }
-    });
-
-    await toast.promise(submitPromise, {
-      loading: "Submitting testimonial...",
-      success: (message) => message as string, // Ensure message is treated as a string
-      error: (err) => err as string, // Use the rejected error message
-    });
-
-    // Reset form & call onSuccess if submission is successful
     try {
-      await submitPromise;
+      await toast.promise(addTestimonial(values), {
+        loading: "Submitting testimonial...",
+        success: "Testimonial submitted successfully!",
+        error: (err) => err.message || "Failed to submit testimonial",
+      });
+
       form.resetField("role");
       form.resetField("testimonial");
 
       if (onSuccess) onSuccess();
     } catch (error) {
-      console.log('Error:',error)
-      // No need to handle error separately since toast.promise already does
+      console.log('Error occurred:',error)
     }
   }
 

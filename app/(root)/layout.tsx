@@ -11,7 +11,8 @@ import BackToTop from "@/components/BackToTop/ToTop";
 import { AuthProvider } from "./providers/auth-provider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import './globals.css'
+import "../globals.css";
+import { QueryProviders } from "./providers/query-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -79,38 +80,41 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <AuthProvider session={session}>
-          <Suspense fallback={<Loading />}>
-            <div className="min-h-screen flex flex-col">
-              <Navbar />
-              <main className="flex-grow">{children}</main>
-              <BackToTop />
-              <Consent />
-              <Footer />
-            </div>
-            <Toaster 
-             position="top-center"
-             toastOptions={{
-               duration: 4000,
-               success: {
-                 duration: 3000,
-               },
-               error: {
-                 duration: 5000,
-               },
-             }}
-             />
-          </Suspense>
-        </AuthProvider>
+        <QueryProviders>
+          <AuthProvider session={session}>
+            <Suspense fallback={<Loading />}>
+              <div className="min-h-screen flex flex-col">
+                <Navbar />
+                <main className="flex-grow">{children}</main>
+                <BackToTop />
+                <Consent />
+                <Footer />
+              </div>
+              <Toaster
+                position="top-center"
+                toastOptions={{
+                  duration: 4000,
+                  success: {
+                    duration: 3000,
+                  },
+                  error: {
+                    duration: 5000,
+                  },
+                }}
+              />
+            </Suspense>
+          </AuthProvider>
+        </QueryProviders>
+
         {/* Tidio Live Chat Script */}
         <Script
           src="//code.tidio.co/2wjfpiet8z2408ksic4atu8nnvcvw8rr.js"
           strategy="afterInteractive"
         />
         <Script
-        src={`https://www.google.com/recaptcha/api.js?render=${process.env.GOOGLE_RECAPTCHA_SITE_KEY}`}
-        strategy="afterInteractive" 
-      />
+          src={`https://www.google.com/recaptcha/api.js?render=${process.env.GOOGLE_RECAPTCHA_SITE_KEY}`}
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

@@ -9,7 +9,7 @@ import Script from "next/script";
 import { AuthProvider } from "../(root)/providers/auth-provider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import '../(root)/globals.css'
+import '../globals.css'
 
 const inter = Inter({
   subsets: ["latin"],

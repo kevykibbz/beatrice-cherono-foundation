@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { ITestimonial, TestimonialsTypes } from "@/types/types";
 import Link from "next/link";
@@ -9,7 +9,9 @@ import { AddTestimonialButton } from "./AddTestimonialButton/AddTestimonialButto
 import { Types } from "mongoose";
 import React from "react";
 import DualRingLoader from "../Loader/DualRingLoader";
+import { useTestimonials } from "@/hooks/useTestimonials";
 import "./Testimonials.css";
+import { useSession } from "next-auth/react";
 
 const DEFAULT_USER: TestimonialsTypes = {
   id: "",
@@ -22,46 +24,51 @@ const DEFAULT_USER: TestimonialsTypes = {
 
 export default function TestimonialsSection() {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [users, setUsers] = useState<TestimonialsTypes[]>([DEFAULT_USER]);
-  const selectedUser = users[selectedIndex] || DEFAULT_USER;
+  const { data: testimonialsData, isLoading } = useTestimonials();
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "admin";
 
   // Process testimonials into displayable users
-  const processTestimonials = (
-    testimonials: ITestimonial[]
-  ): TestimonialsTypes[] => {
-    if (!testimonials.length) return [DEFAULT_USER];
-    return testimonials.map((testimonial) => {
-      const user =
-        testimonial.user instanceof Types.ObjectId ? null : testimonial.user;
-      return {
-        id: testimonial.id,
-        name: user?.name || "Anonymous",
-        email: user?.email,
-        role: testimonial.role,
-        image: user?.image || "/images/profile.png",
-        testimonial: testimonial.testimonial,
-      };
-    });
-  };
+  const processTestimonials = useCallback(
+    (testimonials: ITestimonial[]): TestimonialsTypes[] => {
+      if (!testimonials?.length) return [DEFAULT_USER];
+      return testimonials.map((testimonial) => {
+        const user =
+          testimonial.user && !(testimonial.user instanceof Types.ObjectId)
+            ? testimonial.user
+            : null;
 
-  // Fetch testimonials from API
-  const fetchTestimonials = useCallback(async () => {
-    try {
-      const res = await fetch("/api/testimonials?approved=true");
-      const data = await res.json();
-      setUsers(data.length ? processTestimonials(data) : [DEFAULT_USER]);
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error fetching testimonials:", error);
-      setIsLoading(false);
-    }
-  }, []); //
+        return {
+          id: testimonial.id,
+          name: user?.name || "Anonymous",
+          email: user?.email,
+          role: testimonial.role,
+          image: user?.image || "/images/profile.png",
+          testimonial: testimonial.testimonial,
+        };
+      });
+    },
+    []
+  );
 
-  // Initial fetch
+  const users = useMemo(() => {
+    const dataToProcess = isAdmin
+      ? testimonialsData
+      : (testimonialsData || []).slice(0, 6);
+    return processTestimonials(dataToProcess || []);
+  }, [testimonialsData, processTestimonials, isAdmin]);
+
+  const selectedUser = users[selectedIndex] || DEFAULT_USER;
+
   useEffect(() => {
-    fetchTestimonials();
-  }, [fetchTestimonials]);
+    if (users.length > 1) {
+      const interval = setInterval(() => {
+        setSelectedIndex((prevIndex) => (prevIndex + 1) % users.length);
+      }, 6000); // Auto-switch every 6 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [users.length]);
 
   useEffect(() => {
     if (users.length > 1) {

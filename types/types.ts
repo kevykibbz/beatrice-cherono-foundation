@@ -115,11 +115,14 @@ export type TestimonialsTypes = {
 
 export interface ITestimonial {
   id: string;
-  user: Types.ObjectId | IUser;
-  email?: string;
+  user: Types.ObjectId | {
+    _id: Types.ObjectId;
+    name: string;
+    email: string;
+    image?: string;
+  };
   role: string;
   testimonial: string;
   approved?: boolean;
   createdAt?: Date;
-  updatedAt?: Date;
 }
