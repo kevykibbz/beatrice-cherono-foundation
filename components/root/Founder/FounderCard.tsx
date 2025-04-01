@@ -3,6 +3,7 @@
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
 const FounderCard = () => {
   // Animation variants
@@ -114,7 +115,7 @@ const FounderCard = () => {
               variants={itemVariants}
               className="flex flex-wrap gap-4 pt-2 sm:pt-4"
             >
-              <a
+              <Link
                 href="/contact"
                 className="group rounded-full px-4 py-2 sm:px-6 sm:py-3 bg-purple-600 hover:bg-purple-700 text-white transition-colors duration-300 inline-flex items-center text-sm sm:text-base"
               >
@@ -122,7 +123,7 @@ const FounderCard = () => {
                 <span className="ml-1 sm:ml-2 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-purple-800 group-hover:bg-purple-900 flex items-center justify-center transition-colors duration-300">
                   <ChevronRightIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
                 </span>
-              </a>
+              </Link>
             </motion.div>
           </motion.div>
         </div>
