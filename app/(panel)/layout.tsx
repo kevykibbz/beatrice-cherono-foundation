@@ -45,12 +45,15 @@ export default async function DashboardLayout({
                 <Toaster
                   position="top-center"
                   toastOptions={{
+                    className: 'rounded-full', 
                     duration: 4000,
                     success: {
                       duration: 3000,
+                      className: 'rounded-full' 
                     },
                     error: {
                       duration: 5000,
+                      className: 'rounded-full'
                     },
                   }}
                 />
