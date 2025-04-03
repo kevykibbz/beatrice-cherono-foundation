@@ -108,3 +108,64 @@ model Activity {
   @@index([createdAt(sort: Desc)])
   @@map("activities")
 }
+
+
+model SiteSettings {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  siteName    String
+  description String
+  keywords    String[]
+  author      String
+  favicon     String?
+  siteLogo    String?
+  siteImages  String[]
+  openGraph   OpenGraph? @relation(fields: [openGraphid], references: [id])
+  openGraphid String?     @db.ObjectId
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("site_settings")
+}
+
+model OpenGraph {
+  id       String     @id @default(auto()) @map("_id") @db.ObjectId
+  facebook SocialPlatform? @relation(name: "FacebookRelation", fields: [facebookId], references: [id])
+  facebookId String? @db.ObjectId
+  
+  twitter  SocialPlatform? @relation(name: "TwitterRelation", fields: [twitterId], references: [id])
+  twitterId String? @db.ObjectId
+  
+  instagram SocialPlatform? @relation(name: "InstagramRelation", fields: [instagramId], references: [id])
+  instagramId String? @db.ObjectId
+  
+  linkedin SocialPlatform? @relation(name: "LinkedinRelation", fields: [linkedinId], references: [id])
+  linkedinId String? @db.ObjectId
+  
+  tiktok   SocialPlatform? @relation(name: "TiktokRelation", fields: [tiktokId], references: [id])
+  tiktokId String? @db.ObjectId
+  
+  youtube  SocialPlatform? @relation(name: "YoutubeRelation", fields: [youtubeId], references: [id])
+  youtubeId String? @db.ObjectId
+
+  SiteSettings SiteSettings[]
+}
+
+model SocialPlatform {
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  url        String?
+  cardImage  String?
+  description String?
+  images     String[]
+
+  facebookOpenGraph OpenGraph[] @relation(name: "FacebookRelation")
+
+  twitterOpenGraph OpenGraph[] @relation(name: "TwitterRelation")
+
+  instagramOpenGraph OpenGraph[] @relation(name: "InstagramRelation")
+
+  linkedinOpenGraph OpenGraph[] @relation(name: "LinkedinRelation")
+
+  tiktokOpenGraph OpenGraph[] @relation(name: "TiktokRelation")
+  
+  youtubeOpenGraph OpenGraph[] @relation(name: "YoutubeRelation")
+}

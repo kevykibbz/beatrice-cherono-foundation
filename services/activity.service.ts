@@ -133,4 +133,5 @@ export class ActivityLogger {
       console.error("Failed to log testimonial deletion:", error);
     }
   }
+
 }

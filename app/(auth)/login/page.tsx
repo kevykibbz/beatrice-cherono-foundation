@@ -6,9 +6,12 @@ import { EmailLoginForm } from "@/components/root/Forms/EmailLoginForm";
 import { motion, AnimatePresence } from "framer-motion";
 import { LoginImagesTypes } from "@/types/types";
 import GoogleSigningButton from "@/components/root/GoogleSigningButton/GoogleSigningButton";
+import { useSiteSettings } from "@/context/SiteSettingsContext";
 
 export default function Login() {
-  const [activeSlide, setActiveSlide] = useState(0);
+  const [activeSlide, setActiveSlide] = useState<number>(0);
+  const { settings, isLoading } = useSiteSettings();
+
   const slides: LoginImagesTypes[] = [
     {
       image: "/images/ngo1.jpg",
@@ -172,10 +175,15 @@ export default function Login() {
 
       <div className="fixed md:sticky bottom-0 left-0 right-0 w-full bg-white border-t border-gray-200 z-10">
         <div className="flex justify-center items-center h-10 px-4">
-          <p className="text-gray-500 text-xs md:text-sm text-center">
-            &copy; {new Date().getFullYear()} Beatrice Cherono Melly Foundation,
-            All Rights Reserved.
-          </p>
+          {isLoading ? (
+            <div className="h-4 w-64 bg-gray-200 rounded animate-pulse"></div>
+          ) : (
+            <p className="text-gray-500 text-xs md:text-sm text-center capitalize">
+              &copy; {new Date().getFullYear()}{" "}
+              {settings?.siteName || "Beatrice Cherono Melly Foundation"}, All
+              Rights Reserved.
+            </p>
+          )}
         </div>
       </div>
     </React.Fragment>

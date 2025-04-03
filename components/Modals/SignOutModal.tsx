@@ -32,14 +32,14 @@ export function SignOutModal({ open, onOpenChange }: SignOutModalProps) {
         <div className="flex justify-end gap-4 mt-6">
           <Button
             variant="outline"
-            className="cursor-pointer"
+            className="cursor-pointer rounded-full"
             onClick={() => onOpenChange(false)}
           >
             Cancel
           </Button>
           <Button
             variant="destructive"
-            className="cursor-pointer"
+            className="cursor-pointer rounded-full"
             onClick={handleSignOut}
           >
             Sign Out

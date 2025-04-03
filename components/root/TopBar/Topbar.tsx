@@ -3,11 +3,18 @@
 import React, { JSX, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPinIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
-import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from "react-icons/fa";
+import {
+  FaFacebookF,
+  FaTwitter,
+  FaLinkedinIn,
+  FaInstagram,
+} from "react-icons/fa";
 import Link from "next/link";
+import { useSiteSettings } from "@/context/SiteSettingsContext";
 
 const TopBar = (): JSX.Element => {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const { settings, isLoading } = useSiteSettings();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,6 +29,9 @@ const TopBar = (): JSX.Element => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Social media links from settings or default empty array
+  const socialLinks = settings?.openGraph || {};
+
   return (
     <AnimatePresence>
       {isScrolled && (
@@ -34,26 +44,83 @@ const TopBar = (): JSX.Element => {
         >
           <div className="hidden lg:flex space-x-6">
             <small>
-              <MapPinIcon className="h-4 w-4 inline-block mr-1" /> Eldoret, Uasin Gishu County, Kenya
+              <MapPinIcon className="h-4 w-4 inline-block mr-1" /> Eldoret,
+              Uasin Gishu County, Kenya
             </small>
             <small>
-              <EnvelopeIcon className="h-4 w-4 inline-block mr-1" /> info@beatricecheronomellyfoundation.org
+              <EnvelopeIcon className="h-4 w-4 inline-block mr-1" />{" "}
+              info@beatricecheronomellyfoundation.org
             </small>
           </div>
-          <div className="hidden lg:flex items-center space-x-2">
-            <small>Follow us:</small>
-            <Link href="#" className="text-purple-400 hover:text-purple-800">
-              <FaFacebookF className="h-3.5 w-3.5" />
-            </Link>
-            <Link href="#" className="text-purple-400 hover:text-purple-800">
-              <FaTwitter className="h-3.5 w-3.5" />
-            </Link>
-            <Link href="#" className="text-purple-400 hover:text-purple-800">
-              <FaLinkedinIn className="h-3.5 w-3.5" />
-            </Link>
-            <Link href="#" className="text-purple-400 hover:text-purple-800">
-              <FaInstagram className="h-3.5 w-3.5" />
-            </Link>
+
+          <div className="hidden lg:flex items-center justify-end flex-1 space-x-4">
+            <small className="flex-shrink-0">Follow us:</small>
+
+            <div className="flex space-x-2">
+              {/* Facebook */}
+              {isLoading ? (
+                <div className="h-8 w-8 rounded-full bg-gray-700 animate-pulse" />
+              ) : (
+                socialLinks.facebook?.url && (
+                  <Link
+                    href={socialLinks.facebook.url}
+                    className="group relative p-2 rounded-full transition-all duration-200"
+                    aria-label="Facebook"
+                  >
+                    <div className="absolute inset-0 bg-purple-800 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                    <FaFacebookF className="h-4 w-4 text-purple-400 group-hover:text-white relative z-10" />
+                  </Link>
+                )
+              )}
+
+              {/* Twitter */}
+              {isLoading ? (
+                <div className="h-8 w-8 rounded-full bg-gray-700 animate-pulse" />
+              ) : (
+                socialLinks.twitter?.url && (
+                  <Link
+                    href={socialLinks.twitter.url}
+                    className="group relative p-2 rounded-full transition-all duration-200"
+                    aria-label="Twitter"
+                  >
+                    <div className="absolute inset-0 bg-purple-800 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                    <FaTwitter className="h-4 w-4 text-purple-400 group-hover:text-white relative z-10" />
+                  </Link>
+                )
+              )}
+
+              {/* LinkedIn */}
+              {isLoading ? (
+                <div className="h-8 w-8 rounded-full bg-gray-700 animate-pulse" />
+              ) : (
+                socialLinks.linkedin?.url && (
+                  <Link
+                    href={socialLinks.linkedin.url}
+                    className="group relative p-2 rounded-full transition-all duration-200"
+                    aria-label="LinkedIn"
+                  >
+                    <div className="absolute inset-0 bg-purple-800 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                    <FaLinkedinIn className="h-4 w-4 text-purple-400 group-hover:text-white relative z-10" />
+                  </Link>
+                )
+              )}
+
+              {/* Instagram */}
+              {isLoading ? (
+                <div className="h-8 w-8 rounded-full bg-gray-700 animate-pulse" />
+              ) : (
+                socialLinks.instagram?.url && (
+                  <Link
+                    href={socialLinks.instagram.url}
+                    className="group relative p-2 rounded-full transition-all duration-200"
+                    aria-label="Instagram"
+                  >
+                    <div className="absolute inset-0 bg-purple-800 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                    <FaInstagram className="h-4 w-4 text-purple-400 group-hover:text-white relative z-10" />
+                  </Link>
+                )
+              )}
+            </div>
           </div>
         </motion.div>
       )}

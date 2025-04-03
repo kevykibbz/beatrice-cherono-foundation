@@ -18,8 +18,26 @@ const nextConfig: NextConfig = {
         hostname: "beatricecheronomellyfoundation.org",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "**",
+      },
     ],
     minimumCacheTTL: 60,
+  },
+  async headers() {
+    return [
+      {
+        source: '/_next/static/css/(.*)',
+        headers: [
+          {
+            key: 'Link',
+            value: '</_next/static/css/[name].css>; rel=preload; as=style',
+          },
+        ],
+      },
+    ];
   },
   webpack(config) {
     if (!config.module) {

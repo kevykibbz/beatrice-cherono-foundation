@@ -2,6 +2,9 @@ import Mail from "nodemailer/lib/mailer";
 import { Session, User } from "next-auth";
 import mongoose, { Document, Types } from "mongoose";
 import { PermissionDocument } from "@/lib/models/Permission";
+import { UseFormReturn } from "react-hook-form";
+import { ChangeEvent } from "react";
+import { FormValues } from "@/schemas/SiteSettings";
 
 export type LoaderTypes = {
   width?: number;
@@ -44,8 +47,6 @@ export interface TeamMembersTypes {
   designation: string;
   img: string;
 }
-
-
 
 export type SendEmailTypes = {
   sender: Mail.Address;
@@ -115,14 +116,85 @@ export type TestimonialsTypes = {
 
 export interface ITestimonial {
   id: string;
-  user: Types.ObjectId | {
-    _id: Types.ObjectId;
-    name: string;
-    email: string;
-    image?: string;
-  };
+  user:
+    | Types.ObjectId
+    | {
+        _id: Types.ObjectId;
+        name: string;
+        email: string;
+        image?: string;
+      };
   role: string;
   testimonial: string;
   approved?: boolean;
   createdAt?: Date;
+}
+
+export type SocialMediaPlatform = {
+  name: string;
+  value: string;
+  label: string;
+  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  placeholder: string;
+};
+
+export interface Step1BasicInfoProps {
+  form: UseFormReturn<FormValues>;
+  isUploading: boolean;
+  isLogoUploading: boolean;
+  handleFileUpload: (e: ChangeEvent<HTMLInputElement>) => Promise<void>;
+  handleLogoUpload: (e: ChangeEvent<HTMLInputElement>) => Promise<void>;
+}
+
+export interface Step2ImagesProps {
+  form: UseFormReturn<FormValues>;
+  handleImageUpload: (files: File[]) => Promise<void>;
+}
+
+export interface Step3SocialMediaProps {
+  form: UseFormReturn<FormValues>;
+  platforms: SocialMediaPlatform[];
+}
+
+export interface PlatformFormFieldProps {
+  platform: {
+    value: string;
+    label: string;
+    Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    placeholder: string;
+  };
+  form: UseFormReturn<FormValues>;
+  uploadingPlatform: string | null;
+  handlePlatformImageUpload: (
+    e: ChangeEvent<HTMLInputElement>,
+    platform: string
+  ) => Promise<void>;
+  index?: number;
+}
+
+
+export type SiteSettings = {
+  siteName: string;
+  description: string;
+  keywords?: string;
+  author?: string;
+  favicon?: string;
+  siteLogo?: string;
+  siteImages?: string[];
+  openGraph?: {
+    facebook?: { url?: string };
+    twitter?: { url?: string };
+    instagram?: { url?: string };
+    linkedin?: { url?: string };
+    tiktok?: { url?: string };
+    youtube?: { url?: string };
+  };
+};
+
+
+export interface SocialPlatformData {
+  url?: string | null;
+  cardImage?: string | null;
+  description?: string | null;
+  images?: string[];
 }

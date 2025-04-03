@@ -11,7 +11,7 @@ import DualRingLoader from "@/components/root/Loader/DualRingLoader";
 import { useEffect, useState } from "react";
 import { useWindowSize } from "@/hooks/useWindowSize";
 import React from "react";
-import { LoginModal } from "@/components/root/Modals/LoginModal";
+import { LoginModal } from "@/components/Modals/LoginModal";
 
 export default function AddTestimonial() {
   const router = useRouter();

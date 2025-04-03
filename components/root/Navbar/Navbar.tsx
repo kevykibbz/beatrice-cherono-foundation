@@ -3,16 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
-import {
-  Bars3Icon,
-  XMarkIcon,
-} from "@heroicons/react/24/solid";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import TopBar from "../TopBar/Topbar";
-import SiteLogo from "./SiteLogo";
 import { PathTypes } from "@/types/types";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/hooks/use-session";
-import { SignOutModal } from "../Modals/SignOutModal";
+import { SignOutModal } from "../../Modals/SignOutModal";
+import { useSiteSettings } from "@/context/SiteSettingsContext";
+import Image from "next/image";
 
 const paths: PathTypes[] = [
   { name: "Home", path: "/" },
@@ -26,6 +24,7 @@ const paths: PathTypes[] = [
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [signOutModal, setSignOutModal] = useState<boolean>(false);
+  const { settings, isLoading } = useSiteSettings();
 
   const pathname = usePathname();
   const { isAuthenticated } = useAuth();
@@ -36,13 +35,38 @@ const Navbar: React.FC = () => {
       <SignOutModal open={signOutModal} onOpenChange={setSignOutModal} />
       <header className="bg-white z-[120]">
         <nav className="flex justify-between items-center mx-auto w-[98%]">
-          {/* Logo */}
-          <div className="flex gap-2 items-center">
-            <SiteLogo />
-            <h1 className="hidden lg:block text-sm md:text-lg lg:text-lg font-bold">
-              Beatrice Cherono <span className="text-purple-500">Melly</span>{" "}
-              Foundation
-            </h1>
+          <div className="flex items-center gap-4 py-3 px-4">
+            {isLoading ? (
+              <div className="h-12 w-12 bg-gray-200 rounded-full animate-pulse"></div>
+            ) : settings?.siteLogo ? (
+              <div className="h-12 w-12 relative flex-shrink-0">
+                <Image
+                  src={settings.siteLogo || "/default-logo.png"}
+                  alt="Site Logo"
+                  fill
+                  className="rounded-full object-cover"
+                  sizes="48px"
+                />
+              </div>
+            ) : (
+              <div className="h-12 w-12 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-sm">BC</span>
+              </div>
+            )}
+
+            {/* Site Name with loading skeleton */}
+            {isLoading ? (
+              <div className="hidden lg:block h-7 w-56 bg-gray-200 rounded animate-pulse ml-2"></div>
+            ) : (
+              <h1 className="hidden lg:block text-base md:text-xl lg:text-xl font-bold ml-2  capitalize">
+                {settings?.siteName || (
+                  <>
+                    Beatrice Cherono{" "}
+                    <span className="text-purple-500">Melly</span> Foundation
+                  </>
+                )}
+              </h1>
+            )}
           </div>
 
           {/* Nav Links & Donate Button */}

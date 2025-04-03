@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { EmailLoginForm } from "@/components/root/Forms/EmailLoginForm";
-import GoogleSigningButton from "../GoogleSigningButton/GoogleSigningButton";
+import GoogleSigningButton from "../root/GoogleSigningButton/GoogleSigningButton";
 
 interface LoginModalProps {
   isOpen: boolean;

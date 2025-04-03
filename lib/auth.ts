@@ -4,10 +4,9 @@ import type { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { hashPassword, comparePassword } from "@/utils/hashPassword";
-import { setupDefaultPermissions } from "@/utils/permission";
 import { ActivityLogger } from "@/services/activity.service";
 import { NextApiRequest } from "next";
-import { prisma } from "@/lib/db"; 
+import { prisma } from "@/lib/db";
 
 const adminEmails = [
   process.env.SITE_OWNER_EMAIL1,
@@ -61,7 +60,7 @@ export const authOptions: NextAuthOptions = {
               email: { equals: credentials.email, mode: "insensitive" },
               OR: [{ provider: "credentials" }, { provider: "google" }],
             },
-            include: { permissions: true }
+            include: { permissions: true },
           });
 
           if (!user || !user.password) {
@@ -79,10 +78,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           // Log successful credentials login
-          await ActivityLogger.logLogin(
-            user.id,
-            req as NextApiRequest
-          );
+          await ActivityLogger.logLogin(user.id, req as NextApiRequest);
 
           return {
             id: user.id,
@@ -90,7 +86,7 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             role: user.role,
             image: user.image,
-            permissions: user.permissions
+            permissions: user.permissions,
           };
         } catch (error) {
           if (process.env.NODE_ENV === "production") {
@@ -109,7 +105,9 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile }) {
       if (account?.provider === "google") {
         try {
-          const isAdmin = adminEmails.includes(user.email?.toLowerCase() || "");
+          const email = user.email?.toLowerCase() || "";
+          const isAdmin = adminEmails.includes(email);
+
           const generatedPassword = isAdmin
             ? `Admin@${currentYear}`
             : `${capitalizeFirstLetter(
@@ -117,7 +115,8 @@ export const authOptions: NextAuthOptions = {
               )}@${currentYear}`;
 
           let dbUser = await prisma.user.findUnique({
-            where: { email: user.email || undefined }
+            where: { email },
+            include: { permissions: true },
           });
 
           if (dbUser) {
@@ -126,27 +125,32 @@ export const authOptions: NextAuthOptions = {
             }
             user.id = dbUser.id;
             user.role = dbUser.role;
+            user.permissions = dbUser.permissions;
           } else {
             const hashed = await hashPassword(generatedPassword);
-            const adminPermissions = await setupDefaultPermissions();
-            
+
+            // Get all available permissions for admin users
+            const allPermissions = await prisma.permission.findMany();
+            const adminPermissions = isAdmin ? allPermissions : [];
+
             dbUser = await prisma.user.create({
               data: {
                 name: user.name || profile?.name || "Unknown",
-                email: user.email || "",
+                email,
                 image: profile?.picture || user.image,
                 provider: account.provider,
                 role: isAdmin ? "admin" : "user",
                 password: hashed,
                 permissions: {
-                  connect: isAdmin ? adminPermissions.map(p => ({ id: p.id })) : []
-                }
+                  connect: adminPermissions.map((p) => ({ id: p.id })),
+                },
               },
-              include: { permissions: true }
+              include: { permissions: true },
             });
 
             user.id = dbUser.id;
             user.role = dbUser.role;
+            user.permissions = dbUser.permissions;
           }
 
           return true;
@@ -163,9 +167,9 @@ export const authOptions: NextAuthOptions = {
           ...session.user,
           id: token.user?.id as string,
           role: token.user?.role || "user",
-          ...(token.user?.role === 'admin' && { 
-            permissions: token.user?.permissions || [] 
-          })
+          ...(token.user?.role === "admin" && {
+            permissions: token.user?.permissions || [],
+          }),
         };
       }
       return session;
@@ -179,9 +183,9 @@ export const authOptions: NextAuthOptions = {
           image: user.image ?? undefined,
           role: user.role,
           provider: user.provider,
-          ...(token.user?.role === 'admin' && { 
-            permissions: token.user?.permissions || [] 
-          })
+          ...(token.user?.role === "admin" && {
+            permissions: token.user?.permissions || [],
+          }),
         };
       }
       return token;

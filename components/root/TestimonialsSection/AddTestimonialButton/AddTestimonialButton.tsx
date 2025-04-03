@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useWindowSize } from "@/hooks/useWindowSize";
 import { AddTestimonialModal } from "../AddTestimonialModal";
-import { LoginModal } from "@/components/root/Modals/LoginModal"; 
+import { LoginModal } from "@/components/Modals/LoginModal"; 
 import { useState } from "react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/hooks/use-session";

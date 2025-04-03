@@ -26,6 +26,7 @@ module.exports = {
         DEFAULT: "hsl(var(--border))",
         border: "hsl(var(--border))",
       },
+      scrollbar: ['rounded'],
       colors: {
         dark: "#18181b",
         background_dark: '#020817', 
@@ -83,6 +84,7 @@ module.exports = {
   },
   plugins: [
     require("tailwindcss-animate"),
+    require('tailwind-scrollbar')({ nocompatible: true }),
     containerPlugin,
     nextui({
       themes: {

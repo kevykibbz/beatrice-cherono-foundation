@@ -3,10 +3,13 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { gsap } from "gsap";
+import { useSiteSettings } from "@/context/SiteSettingsContext";
 
 
 
 export default function NotFound() {
+  const {settings,isLoading}=useSiteSettings()
+  
   useEffect(() => {
     // GSAP Animations
     gsap.set("svg", { visibility: "visible" });
@@ -835,12 +838,17 @@ export default function NotFound() {
           </div>
         </div>
       </main>
+      {/* Footer with Loading Skeleton */}
       <div className="fixed md:sticky bottom-0 left-0 right-0 w-full bg-white border-t border-gray-200 z-10">
         <div className="flex justify-center items-center h-10 px-4">
-          <p className="text-gray-500 text-xs md:text-sm text-center">
-            &copy; {new Date().getFullYear()} Beatrice Cherono Melly Foundation,
-            All Rights Reserved.
-          </p>
+          {isLoading ? (
+            <div className="h-4 w-64 bg-gray-200 rounded animate-pulse"></div>
+          ) : (
+            <p className="text-gray-500 text-xs md:text-sm text-center">
+              &copy; {new Date().getFullYear()} {settings?.siteName || "Beatrice Cherono Melly Foundation"},
+              All Rights Reserved.
+            </p>
+          )}
         </div>
       </div>
     </div>
