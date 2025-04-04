@@ -13,6 +13,7 @@ import {
   CalendarIcon,
   ImageIcon,
   FileBarChartIcon,
+  ShieldIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,25 +39,28 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { settings, isLoading } = useSiteSettings();
 
   // Navigation items with appropriate icons
-  const navItems = {
-    main: [
-      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboardIcon },
-      { title: "About", url: "/about", icon: BookIcon },
-      { title: "Causes", url: "/causes", icon: HeartHandshakeIcon },
-      { title: "Services", url: "/services", icon: FolderIcon },
-      { title: "Teams", url: "/teams", icon: UsersIcon },
-      { title: "Testimonials", url: "/testimonials", icon: MessageSquareIcon },
-    ],
-    extras: [
-      { name: "Projects", url: "/projects", icon: FileBarChartIcon },
-      { name: "Events", url: "/events", icon: CalendarIcon },
-      { name: "Gallery", url: "/gallery", icon: ImageIcon },
-    ],
-    secondary: [
-      { title: "Settings", url: "/settings", icon: SettingsIcon },
-      { title: "Support", url: "https://tevinly.com", icon: LifeBuoyIcon },
-    ],
-  };
+  const BASE_PATH = "/dashboard";
+
+const navItems = {
+  main: [
+    { title: "Dashboard", url: `${BASE_PATH}`, icon: LayoutDashboardIcon },
+    { title: "About", url: `${BASE_PATH}/about`, icon: BookIcon },
+    { title: "Causes", url: `${BASE_PATH}/causes`, icon: HeartHandshakeIcon },
+    { title: "Services", url: `${BASE_PATH}/services`, icon: FolderIcon },
+    { title: "Teams", url: `${BASE_PATH}/teams`, icon: UsersIcon },
+    { title: "Testimonials", url: `${BASE_PATH}/testimonials`, icon: MessageSquareIcon },
+    { title: "Login Page", url: `${BASE_PATH}/login`, icon:ShieldIcon },
+  ],
+  extras: [
+    { title: "Projects", url: `${BASE_PATH}/projects`, icon: FileBarChartIcon },
+    { title: "Events", url: `${BASE_PATH}/events`, icon: CalendarIcon },
+    { title: "Gallery", url: `${BASE_PATH}/gallery`, icon: ImageIcon },
+  ],
+  secondary: [
+    { title: "Settings", url: `${BASE_PATH}/site-settings`, icon: SettingsIcon },
+    { title: "Support", url: "https://tevinly.com", icon: LifeBuoyIcon,external: true },
+  ],
+};
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -102,7 +106,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarContent>
         <NavMain items={navItems.main} />
-        <NavDocuments items={navItems.extras} />
+        <NavDocuments items={navItems.extras.map(({ title, ...rest }) => ({ name: title, ...rest }))} />
         <NavSecondary items={navItems.secondary} className="mt-auto" />
       </SidebarContent>
 

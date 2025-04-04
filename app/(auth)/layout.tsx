@@ -6,6 +6,7 @@ import Consent from "@/components/root/CookieConsent/Consent";
 import BackToTop from "@/components/BackToTop/ToTop";
 import Script from "next/script";
 import { AuthProvider } from "../(root)/providers/auth-provider";
+import { QueryProviders } from "./providers/query-provider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { SiteSettingsProvider } from "@/context/SiteSettingsContext";
@@ -33,29 +34,30 @@ export default async function RootLayout({
         suppressHydrationWarning={true}
       >
         <SiteSettingsProvider>
-          <AuthProvider session={session}>
-            <Suspense fallback={<Loading />}>
-              <div className="min-h-screen flex flex-col">
-                <main className="flex-grow">{children}</main>
-                <BackToTop />
-                <Consent />
-              </div>
-              <Toaster
-                position="top-center"
-                toastOptions={{
-                  duration: 4000,
-                  success: {
-                    duration: 3000,
-                  },
-                  error: {
-                    duration: 5000,
-                  },
-                }}
-              />
-            </Suspense>
-          </AuthProvider>
+          <QueryProviders>
+            <AuthProvider session={session}>
+              <Suspense fallback={<Loading />}>
+                <div className="min-h-screen flex flex-col">
+                  <main className="flex-grow">{children}</main>
+                  <BackToTop />
+                  <Consent />
+                </div>
+                <Toaster
+                  position="top-center"
+                  toastOptions={{
+                    duration: 4000,
+                    success: {
+                      duration: 3000,
+                    },
+                    error: {
+                      duration: 5000,
+                    },
+                  }}
+                />
+              </Suspense>
+            </AuthProvider>
+          </QueryProviders>
         </SiteSettingsProvider>
-
         {/* Tidio Live Chat Script */}
         <Script
           src="//code.tidio.co/2wjfpiet8z2408ksic4atu8nnvcvw8rr.js"

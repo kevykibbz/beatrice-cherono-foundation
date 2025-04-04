@@ -5,6 +5,7 @@ import { PermissionDocument } from "@/lib/models/Permission";
 import { UseFormReturn } from "react-hook-form";
 import { ChangeEvent } from "react";
 import { FormValues } from "@/schemas/SiteSettings";
+import { PermissionAction, Role } from "@prisma/client";
 
 export type LoaderTypes = {
   width?: number;
@@ -198,3 +199,57 @@ export interface SocialPlatformData {
   description?: string | null;
   images?: string[];
 }
+
+
+export type AuthCheckResult = {
+  isAuthenticated: boolean;
+  isAdmin: boolean;
+  user: {
+    id: string;
+    email: string;
+    role: Role;
+    permissions: {
+      resource: string;
+      action: PermissionAction;
+    }[];
+  } | null;
+};
+
+export type SocialLinks = {
+  facebook?: {
+    url?: string;
+    description?: string;
+    cardImage?: string;
+    images?: string[];
+  };
+  twitter?: {
+    url?: string;
+    description?: string;
+    cardImage?: string;
+    images?: string[];
+  };
+  linkedin?: {
+    url?: string;
+    description?: string;
+    cardImage?: string;
+    images?: string[];
+  };
+  instagram?: {
+    url?: string;
+    description?: string;
+    cardImage?: string;
+    images?: string[];
+  };
+  tiktok?: {
+    url?: string;
+    description?: string;
+    cardImage?: string;
+    images?: string[];
+  };
+  youtube?: {
+    url?: string;
+    description?: string;
+    cardImage?: string;
+    images?: string[];
+  };
+};

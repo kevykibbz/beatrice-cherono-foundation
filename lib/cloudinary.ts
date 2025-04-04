@@ -122,22 +122,33 @@ export async function uploadImage(
  * Delete image from Cloudinary (requires server-side implementation)
  */
 export async function deleteImage(publicId: string): Promise<void> {
-  try {
-    // This would need to be implemented via an API route
-    // since it requires the API secret
-    const response = await fetch("/api/cloudinary/delete", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ publicId }),
-    });
+  const response = await fetch('/api/cloudinary/delete', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ publicId }),
+  });
 
-    if (!response.ok) {
-      throw new Error("Delete failed");
-    }
-  } catch (error) {
-    console.error("Delete error:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error('Failed to delete image');
   }
+}
+
+export function extractPublicId(url: string): string {
+  // Handle various Cloudinary URL formats
+  const uploadIndex = url.indexOf('/upload/');
+  if (uploadIndex === -1) {
+    throw new Error('Invalid Cloudinary URL');
+  }
+
+  const pathAfterUpload = url.slice(uploadIndex + 8); // +8 to skip '/upload/'
+  const [version, ...rest] = pathAfterUpload.split('/');
+  
+  // Check if the first part is a version (v1234567)
+  const isVersion = version.startsWith('v') && /^\d+$/.test(version.slice(1));
+  const actualPath = isVersion ? rest.join('/') : pathAfterUpload;
+
+  // Remove file extension and any transformations
+  return actualPath.replace(/\..+$/, '').split('/').slice(1).join('/');
 }

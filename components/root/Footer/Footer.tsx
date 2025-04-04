@@ -111,7 +111,6 @@ export default async function Footer() {
                   { icon: <FaTiktok />, link: settings.openGraph?.tiktok?.url },
                 ].map((item, index) => {
                   const hasLink = !!item.link;
-                  console.log("item.link", item.link);
                   return (
                     <a
                       key={index}

@@ -44,6 +44,12 @@ enum ActivityType {
   TESTIMONIAL_DELETE
   TEAM_MEMBER_ADD
   GALLERY_UPLOAD
+  GALLERY_DELETE
+  GALLERY_UPDATE
+  GALLERY_CREATE
+  SITE_SETTINGS_CREATE
+  SITE_SETTINGS_UPDATE
+  CONTACT_DETAILS_UPDATE
 }
 
 // ======================
@@ -65,6 +71,7 @@ model User {
   updatedAt    DateTime     @updatedAt
 
   @@map("users")
+  CarouselImage CarouselImage[]
 }
 
 model Permission {
@@ -111,7 +118,7 @@ model Activity {
 
 
 model SiteSettings {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
   siteName    String
   description String
   keywords    String[]
@@ -119,53 +126,36 @@ model SiteSettings {
   favicon     String?
   siteLogo    String?
   siteImages  String[]
-  openGraph   OpenGraph? @relation(fields: [openGraphid], references: [id])
-  openGraphid String?     @db.ObjectId
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  openGraph   SocialPlatform[] @relation("OpenGraphPlatforms")
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 
   @@map("site_settings")
 }
 
-model OpenGraph {
-  id       String     @id @default(auto()) @map("_id") @db.ObjectId
-  facebook SocialPlatform? @relation(name: "FacebookRelation", fields: [facebookId], references: [id])
-  facebookId String? @db.ObjectId
-  
-  twitter  SocialPlatform? @relation(name: "TwitterRelation", fields: [twitterId], references: [id])
-  twitterId String? @db.ObjectId
-  
-  instagram SocialPlatform? @relation(name: "InstagramRelation", fields: [instagramId], references: [id])
-  instagramId String? @db.ObjectId
-  
-  linkedin SocialPlatform? @relation(name: "LinkedinRelation", fields: [linkedinId], references: [id])
-  linkedinId String? @db.ObjectId
-  
-  tiktok   SocialPlatform? @relation(name: "TiktokRelation", fields: [tiktokId], references: [id])
-  tiktokId String? @db.ObjectId
-  
-  youtube  SocialPlatform? @relation(name: "YoutubeRelation", fields: [youtubeId], references: [id])
-  youtubeId String? @db.ObjectId
+model SocialPlatform {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  platform    String   // e.g. "facebook", "twitter", etc.
+  url         String?
+  cardImage   String?
+  description String?
+  images      String[]
+  title       String?  // Added to match your Zod schema
 
-  SiteSettings SiteSettings[]
+  siteSettings SiteSettings? @relation("OpenGraphPlatforms", fields: [siteSettingsId], references: [id])
+  siteSettingsId String? @db.ObjectId
 }
 
-model SocialPlatform {
-  id         String     @id @default(auto()) @map("_id") @db.ObjectId
-  url        String?
-  cardImage  String?
-  description String?
-  images     String[]
 
-  facebookOpenGraph OpenGraph[] @relation(name: "FacebookRelation")
+model CarouselImage {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  imageUrl    String     @unique
+  createdBy   User       @relation(fields: [userId], references: [id])
+  userId      String     @db.ObjectId
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
-  twitterOpenGraph OpenGraph[] @relation(name: "TwitterRelation")
-
-  instagramOpenGraph OpenGraph[] @relation(name: "InstagramRelation")
-
-  linkedinOpenGraph OpenGraph[] @relation(name: "LinkedinRelation")
-
-  tiktokOpenGraph OpenGraph[] @relation(name: "TiktokRelation")
-  
-  youtubeOpenGraph OpenGraph[] @relation(name: "YoutubeRelation")
+  @@map("carousel_images")
 }

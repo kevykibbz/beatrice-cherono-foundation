@@ -2,32 +2,52 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { redis } from "@/lib/redis";
+
+// Cache configuration
+const TESTIMONIALS_CACHE_PREFIX = "testimonials";
+const CACHE_TTL = 300; // 5 minutes in seconds
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
 
-    // Validate that only "approved" param is present
-    const allowedParams = ["approved"];
-    for (const param of searchParams.keys()) {
-      if (!allowedParams.includes(param)) {
-        return NextResponse.json(
-          {
-            error: `Invalid query parameter: ${param}. Only 'approved' is allowed.`,
-          },
-          { status: 400 }
-        );
-      }
+    // Validate query parameters
+    const approvedParam = searchParams.get("approved");
+    if (searchParams.size > 0 && !approvedParam) {
+      return NextResponse.json(
+        { error: "Invalid query parameters. Only 'approved' is allowed." },
+        { status: 400 }
+      );
     }
 
+    // Check session and permissions
     const session = await getServerSession(authOptions);
     const isAdmin = session?.user?.role === "admin";
+    const approvedOnly = approvedParam?.toLowerCase() === "true";
 
-    const approvedOnly = searchParams.get("approved")?.toLowerCase() === "true";
+    // Generate cache key based on query and permissions
+    const cacheKey = `${TESTIMONIALS_CACHE_PREFIX}:${
+      approvedOnly ? "approved" : "all"
+    }:${isAdmin ? "admin" : "public"}`;
+
+    // Try to get from cache first
+
+    const cachedTestimonials = await redis.get(cacheKey);
+    if (cachedTestimonials) {
+      return NextResponse.json(JSON.parse(cachedTestimonials));
+    }
+
+    // Fetch from database if not in cache
     const testimonials = await prisma.testimonial.findMany({
-      where: { approved: approvedOnly },
       orderBy: { createdAt: "desc" },
-      take: isAdmin ? undefined : 6, // Limit to 6 if not admin
+      where: {
+        AND: [
+          ...(approvedOnly ? [{ approved: true }] : []),
+          { userId: { not: undefined } } 
+        ]
+      },
+      take: isAdmin ? undefined : 6,
       include: {
         user: {
           select: {
@@ -39,13 +59,22 @@ export async function GET(request: Request) {
           },
         },
       },
+
     });
 
+
+    // Cache the result
+    await redis.set(cacheKey, JSON.stringify(testimonials), "EX", CACHE_TTL);
     return NextResponse.json(testimonials);
   } catch (error) {
     console.error("Error fetching testimonials:", error);
     return NextResponse.json(
-      { error: "Failed to fetch testimonials" },
+      {
+        error: "Failed to fetch testimonials",
+        ...(process.env.NODE_ENV === "development" && {
+          details: error instanceof Error ? error.message : undefined,
+        }),
+      },
       { status: 500 }
     );
   }

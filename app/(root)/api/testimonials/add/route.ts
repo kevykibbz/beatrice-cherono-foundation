@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/db"; 
-import { ActivityLogger } from "@/services/activity.service";
+import { prisma } from "@/lib/db";
+import { redis } from "@/lib/redis";
+
+// Cache configuration (should match GET endpoint)
+const TESTIMONIALS_CACHE_PREFIX = "testimonials";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,13 +19,13 @@ export async function POST(request: NextRequest) {
     }
 
     const { role, testimonial } = await request.json();
-    const isAdmin = session.user.role === 'admin';
+    const isAdmin = session.user.role === "admin";
 
     // Check for existing testimonial from this user
     const existingTestimonial = await prisma.testimonial.findFirst({
       where: {
-        userId: session.user.id
-      }
+        userId: session.user.id,
+      },
     });
 
     if (existingTestimonial) {
@@ -35,23 +38,39 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create new testimonial
-    const newTestimonial = await prisma.testimonial.create({
-      data: {
-        userId: session.user.id,
-        role,
-        testimonial,
-        approved: isAdmin // Auto-approve if admin
-      }
+    // Create new testimonial in a transaction
+    const result = await prisma.$transaction(async (tx) => {
+      const newTestimonial = await tx.testimonial.create({
+        data: {
+          userId: session.user.id,
+          role,
+          testimonial,
+          approved: isAdmin, // Auto-approve if admin
+        },
+      });
+
+      await tx.activity.create({
+        data: {
+          userId: session.user.id,
+          action: "TESTIMONIAL_ADD",
+          details: `Created testimonial: ${testimonial}`,
+          metadata: {
+            testimonialId: newTestimonial.id,
+            testimonial,
+          },
+        },
+      });
+
+      return newTestimonial;
     });
 
-    await ActivityLogger.logTestimonialAdd(
-      session.user.id,
-      newTestimonial.id,
-      request
-    );
-    
-    return NextResponse.json(newTestimonial, { status: 201 });
+    // Clear all testimonial cache variants
+    const cacheKeys = await redis.keys(`${TESTIMONIALS_CACHE_PREFIX}:*`);
+    if (cacheKeys.length > 0) {
+      await redis.del(cacheKeys);
+    }
+
+    return NextResponse.json(result, { status: 201 });
   } catch (error) {
     console.error("Testimonial submission error:", error);
     return NextResponse.json(

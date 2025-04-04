@@ -3,153 +3,131 @@ import { FormValues, siteSettingsSchema } from "@/schemas/SiteSettings";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { SocialPlatformData } from "@/types/types";
+import { redis } from "@/lib/redis";
+
+// Cache key and TTL
+const CACHE_KEY = "site:settings";
+const CACHE_TTL = 300; // 5 minutes in seconds
+
+// Common error responses
+const UNAUTHORIZED = NextResponse.json(
+  { error: "Unauthorized" },
+  { status: 401 }
+);
+const FORBIDDEN = NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
 export async function POST(request: Request) {
   try {
-    // Validate user authentication
+    // Authentication and authorization checks
     const session = await getServerSession(authOptions);
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (!session?.user) return UNAUTHORIZED;
 
-    // Fetch user from database
     const user = await prisma.user.findUnique({
       where: { email: session.user.email ?? undefined },
-      include: { permissions: true },
+      select: {
+        id: true,
+        role: true,
+        permissions: { where: { action: "manage" } },
+      },
     });
 
-    if (!user || user.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
-    // Check if user has full permissions (manage permission)
-    const hasManagePermission = user.permissions.some(
-      (perm) => perm.action === "manage"
-    );
-
-    if (!hasManagePermission) {
-      return NextResponse.json(
-        { error: "Insufficient permissions" },
-        { status: 403 }
-      );
+    if (!user || user.role !== "admin" || user.permissions.length === 0) {
+      return FORBIDDEN;
     }
 
     // Validate request body
     const body: FormValues = await request.json();
     const validatedData = siteSettingsSchema.parse(body);
 
-    // Create or update social platforms
-    const createOrUpdateSocialPlatform = async (platformData: SocialPlatformData) => {
-      if (!platformData) return null;
-      
-      const data = {
-        url: platformData.url || null,
-        cardImage: platformData.cardImage || null,
-        description: platformData.description || null,
-        images: platformData.images || [],
-      };
-
-      // Check if we should update existing or create new
-      const existing = await prisma.socialPlatform.findFirst({
-        where: { url: platformData.url }
-      });
-
-      if (existing) {
-        return await prisma.socialPlatform.update({
-          where: { id: existing.id },
-          data
+    // Transaction for all database operations
+    const result = await prisma.$transaction(
+      async (tx) => {
+        const existingSettings = await tx.siteSettings.findFirst({
+          include: { openGraph: true },
         });
+
+        const settingsData = {
+          /* ... */
+        };
+
+        // Parallelize platform operations
+        const platformPromises = Object.entries(
+          validatedData.openGraph ?? {}
+        ).map(([platformName, platformData]) => ({
+          platform: platformName,
+          title: validatedData.siteName,
+          url: platformData.url,
+          cardImage: platformData.cardImage,
+          description: platformData.description,
+          images: platformData.images || [],
+        }));
+
+        if (existingSettings) {
+          // Batch delete existing platforms
+          await tx.socialPlatform.deleteMany({
+            where: { siteSettingsId: existingSettings.id },
+          });
+
+          // Batch create new platforms
+          const socialPlatforms = await Promise.all(
+            platformPromises.map((data) =>
+              tx.socialPlatform.create({
+                data: {
+                  ...data,
+                  siteSettings: { connect: { id: existingSettings.id } },
+                },
+              })
+            )
+          );
+
+          const settings = await tx.siteSettings.update({
+            where: { id: existingSettings.id },
+            data: settingsData,
+          });
+
+          // Simplified activity log
+          await tx.activity.create({
+            data: {
+              userId: user.id,
+              action: "SITE_SETTINGS_UPDATE",
+              details: `Updated site settings`,
+              metadata: { settingsId: settings.id },
+            },
+          });
+
+          return { ...settings, openGraph: socialPlatforms };
+        } else {
+          const settings = await tx.siteSettings.create({
+            data: {
+              siteName: validatedData.siteName,
+              description: validatedData.description,
+              author: validatedData.author,
+              ...settingsData,
+              openGraph: { create: platformPromises },
+            },
+            include: { openGraph: true },
+          });
+
+          await tx.activity.create({
+            data: {
+              userId: user.id,
+              action: "SITE_SETTINGS_CREATE",
+              details: `Created new site settings`,
+              metadata: { settingsId: settings.id },
+            },
+          });
+
+          return settings;
+        }
+      },
+      {
+        maxWait: 10000,
+        timeout: 10000,
       }
-      return await prisma.socialPlatform.create({ data });
-    };
+    );
 
-    // Process all social platforms in parallel
-    const [
-      facebook,
-      twitter,
-      instagram,
-      linkedin,
-      tiktok,
-      youtube
-    ] = await Promise.all([
-      createOrUpdateSocialPlatform(validatedData.openGraph?.facebook ?? { url: "", description: "", cardImage: "", images: [] }),
-      createOrUpdateSocialPlatform(validatedData.openGraph?.twitter ?? { url: "", description: "", cardImage: "", images: [] }),
-      createOrUpdateSocialPlatform(validatedData.openGraph?.instagram ?? { url: "", description: "", cardImage: "", images: [] }),
-      createOrUpdateSocialPlatform(validatedData.openGraph?.linkedin ?? { url: "", description: "", cardImage: "", images: [] }),
-      createOrUpdateSocialPlatform(validatedData.openGraph?.tiktok ?? { url: "", description: "", cardImage: "", images: [] }),
-      createOrUpdateSocialPlatform(validatedData.openGraph?.youtube ?? { url: "", description: "", cardImage: "", images: [] }),
-    ]);
-
-    // Create or update OpenGraph
-    const openGraphData = {
-      facebook: facebook ? { connect: { id: facebook.id } } : undefined,
-      twitter: twitter ? { connect: { id: twitter.id } } : undefined,
-      instagram: instagram ? { connect: { id: instagram.id } } : undefined,
-      linkedin: linkedin ? { connect: { id: linkedin.id } } : undefined,
-      tiktok: tiktok ? { connect: { id: tiktok.id } } : undefined,
-      youtube: youtube ? { connect: { id: youtube.id } } : undefined,
-    };
-
-    // Check if we should update existing settings or create new
-    const existingSettings = await prisma.siteSettings.findFirst();
-
-    const settings = existingSettings
-      ? await prisma.siteSettings.update({
-          where: { id: existingSettings.id },
-          data: {
-            siteName: validatedData.siteName,
-            description: validatedData.description,
-            keywords: validatedData.keywords.split(",").map(k => k.trim()),
-            author: validatedData.author,
-            favicon: validatedData.favicon,
-            siteLogo: validatedData.siteLogo,
-            siteImages: validatedData.siteImages,
-            openGraph: {
-              update: openGraphData
-            }
-          },
-          include: {
-            openGraph: {
-              include: {
-                facebook: true,
-                twitter: true,
-                instagram: true,
-                linkedin: true,
-                tiktok: true,
-                youtube: true,
-              }
-            }
-          }
-        })
-      : await prisma.siteSettings.create({
-          data: {
-            siteName: validatedData.siteName,
-            description: validatedData.description,
-            keywords: validatedData.keywords.split(",").map(k => k.trim()),
-            author: validatedData.author,
-            favicon: validatedData.favicon,
-            siteLogo: validatedData.siteLogo,
-            siteImages: validatedData.siteImages,
-            openGraph: {
-              create: openGraphData
-            }
-          },
-          include: {
-            openGraph: {
-              include: {
-                facebook: true,
-                twitter: true,
-                instagram: true,
-                linkedin: true,
-                tiktok: true,
-                youtube: true,
-              }
-            }
-          }
-        });
-
-    return NextResponse.json(settings);
+    await redis.del(CACHE_KEY);
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Error saving site settings:", error);
     return NextResponse.json(
@@ -161,20 +139,28 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
+    // Check Redis cache first
+    const cachedSettings = await redis.get(CACHE_KEY);
+    if (cachedSettings) {
+      return NextResponse.json(JSON.parse(cachedSettings));
+    }
+
+    // Fetch with optimized query
     const settings = await prisma.siteSettings.findFirst({
       orderBy: { createdAt: "desc" },
       include: {
         openGraph: {
-          include: {
-            facebook: true,
-            twitter: true,
-            instagram: true,
-            linkedin: true,
-            tiktok: true,
-            youtube: true,
-          }
-        }
-      }
+          select: {
+            id: true,
+            platform: true,
+            url: true,
+            description: true,
+            cardImage: true,
+            images: true,
+            title: true,
+          },
+        },
+      },
     });
 
     if (!settings) {
@@ -184,6 +170,20 @@ export async function GET() {
       );
     }
 
+    // Transform the openGraph array into the expected object format
+    const openGraph = settings.openGraph.reduce((acc, platform) => {
+      acc[platform.platform] = {
+        url: platform.url || undefined,
+        description: platform.description || undefined,
+        cardImage: platform.cardImage || undefined,
+        images: platform.images || undefined,
+        title: platform.title || undefined,
+      };
+      return acc;
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }, {} as Record<string, any>);
+
+    // Transform data
     const responseData: FormValues = {
       siteName: settings.siteName,
       description: settings.description,
@@ -192,59 +192,11 @@ export async function GET() {
       favicon: settings.favicon || "",
       siteLogo: settings.siteLogo || "",
       siteImages: settings.siteImages,
-      openGraph: settings.openGraph
-        ? {
-            facebook: settings.openGraph.facebook
-              ? {
-                  url: settings.openGraph.facebook.url || undefined,
-                  description: settings.openGraph.facebook.description || undefined,
-                  cardImage: settings.openGraph.facebook.cardImage || undefined,
-                  images: settings.openGraph.facebook.images || undefined,
-                }
-              : undefined,
-            twitter: settings.openGraph.twitter
-              ? {
-                  url: settings.openGraph.twitter.url || undefined,
-                  description: settings.openGraph.twitter.description || undefined,
-                  cardImage: settings.openGraph.twitter.cardImage || undefined,
-                  images: settings.openGraph.twitter.images || undefined,
-                }
-              : undefined,
-            instagram: settings.openGraph.instagram
-              ? {
-                  url: settings.openGraph.instagram.url || undefined,
-                  description: settings.openGraph.instagram.description || undefined,
-                  cardImage: settings.openGraph.instagram.cardImage || undefined,
-                  images: settings.openGraph.instagram.images || undefined,
-                }
-              : undefined,
-            linkedin: settings.openGraph.linkedin
-              ? {
-                  url: settings.openGraph.linkedin.url || undefined,
-                  description: settings.openGraph.linkedin.description || undefined,
-                  cardImage: settings.openGraph.linkedin.cardImage || undefined,
-                  images: settings.openGraph.linkedin.images || undefined,
-                }
-              : undefined,
-            tiktok: settings.openGraph.tiktok
-              ? {
-                  url: settings.openGraph.tiktok.url || undefined,
-                  description: settings.openGraph.tiktok.description || undefined,
-                  cardImage: settings.openGraph.tiktok.cardImage || undefined,
-                  images: settings.openGraph.tiktok.images || undefined,
-                }
-              : undefined,
-            youtube: settings.openGraph.youtube
-              ? {
-                  url: settings.openGraph.youtube.url || undefined,
-                  description: settings.openGraph.youtube.description || undefined,
-                  cardImage: settings.openGraph.youtube.cardImage || undefined,
-                  images: settings.openGraph.youtube.images || undefined,
-                }
-              : undefined,
-          }
-        : undefined
+      openGraph: Object.keys(openGraph).length > 0 ? openGraph : undefined,
     };
+
+    // Cache the response in Redis
+    await redis.set(CACHE_KEY, JSON.stringify(responseData), "EX", CACHE_TTL);
 
     return NextResponse.json(responseData);
   } catch (error) {
