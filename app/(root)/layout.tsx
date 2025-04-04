@@ -15,6 +15,7 @@ import { generateMetadata } from "@/lib/generateMetadata";
 import { SiteSettingsProvider } from "@/context/SiteSettingsContext";
 import "../globals.css";
 import "./styles.css";
+import { OfflineBanner } from "@/components/OfflineBanner/offline-banner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -47,21 +48,22 @@ export default async function RootLayout({
                 <Toaster
                   position="top-center"
                   toastOptions={{
-                    className: 'rounded-full', 
+                    className: "rounded-full",
                     duration: 4000,
                     success: {
                       duration: 3000,
-                      className: 'rounded-full' 
+                      className: "rounded-full",
                     },
                     error: {
                       duration: 5000,
-                      className: 'rounded-full'
+                      className: "rounded-full",
                     },
                   }}
                 />
               </Suspense>
             </AuthProvider>
           </QueryProviders>
+          <OfflineBanner />
         </SiteSettingsProvider>
 
         {/* Tidio Live Chat Script */}

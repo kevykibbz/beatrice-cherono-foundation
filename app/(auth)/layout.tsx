@@ -12,6 +12,7 @@ import { authOptions } from "@/lib/auth";
 import { SiteSettingsProvider } from "@/context/SiteSettingsContext";
 import { generateMetadata } from "@/lib/generateMetadata";
 import "../globals.css";
+import { OfflineBanner } from "@/components/OfflineBanner/offline-banner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -57,6 +58,7 @@ export default async function RootLayout({
               </Suspense>
             </AuthProvider>
           </QueryProviders>
+          <OfflineBanner />
         </SiteSettingsProvider>
         {/* Tidio Live Chat Script */}
         <Script

@@ -15,6 +15,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { SiteSettingsProvider } from "@/context/SiteSettingsContext";
 import { SiteFooter } from "@/components/panel/site-footer";
+import { OfflineBanner } from "@/components/OfflineBanner/offline-banner";
 
 export const metadata = await generateMetadata();
 
@@ -60,6 +61,7 @@ export default async function DashboardLayout({
               </AuthProvider>
             </QueryProviders>
           </Suspense>
+          <OfflineBanner />
         </SiteSettingsProvider>
       </body>
     </html>
