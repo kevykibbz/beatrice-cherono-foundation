@@ -6,7 +6,7 @@ export const fetchSiteSettings = async (): Promise<FormValues> => {
   return response.json();
 };
 
-export const submitSiteSettings = async (data: FormValues): Promise<void> => {
+export const createSiteSettings = async (data: FormValues): Promise<void> => {
   const response = await fetch("/api/site-settings", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -17,3 +17,20 @@ export const submitSiteSettings = async (data: FormValues): Promise<void> => {
   if (!response.ok)
     throw new Error(responseData.error || "Failed to save settings");
 };
+
+export async function updateSiteSettings(data: FormValues): Promise<FormValues> {
+  const response = await fetch('/api/site-settings', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to update site settings');
+  }
+
+  return response.json();
+}

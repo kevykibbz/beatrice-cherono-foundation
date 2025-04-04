@@ -207,3 +207,124 @@ export async function GET() {
     );
   }
 }
+
+
+export async function PUT(request: Request) {
+  try {
+    // Authentication and authorization checks
+    const session = await getServerSession(authOptions);
+    if (!session?.user) return UNAUTHORIZED;
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email ?? undefined },
+      select: {
+        id: true,
+        role: true,
+        permissions: { where: { action: "manage" } },
+      },
+    });
+
+    if (!user || user.role !== "admin" || user.permissions.length === 0) {
+      return FORBIDDEN;
+    }
+
+    // Validate request body
+    const body: FormValues = await request.json();
+    const validatedData = siteSettingsSchema.parse(body);
+
+    // Transaction for all database operations
+    const result = await prisma.$transaction(
+      async (tx) => {
+        // Get existing settings (required for PUT)
+        const existingSettings = await tx.siteSettings.findFirst({
+          include: { openGraph: true },
+        });
+
+        if (!existingSettings) {
+          throw new Error("No site settings found to update");
+        }
+
+        // Prepare settings data (same as your POST implementation)
+        const settingsData = {
+          siteName: validatedData.siteName,
+          description: validatedData.description,
+          author: validatedData.author,
+          keywords: validatedData.keywords?.split(",") ?? [],
+          favicon: validatedData.favicon,
+          siteLogo: validatedData.siteLogo,
+          siteImages: validatedData.siteImages,
+        };
+
+        // Prepare platform operations (same as POST)
+        const platformPromises = Object.entries(
+          validatedData.openGraph ?? {}
+        ).map(([platformName, platformData]) => ({
+          platform: platformName,
+          title: validatedData.siteName,
+          url: platformData.url,
+          cardImage: platformData.cardImage,
+          description: platformData.description,
+          images: platformData.images || [],
+        }));
+
+        // Batch delete existing platforms
+        await tx.socialPlatform.deleteMany({
+          where: { siteSettingsId: existingSettings.id },
+        });
+
+        // Batch create new platforms
+        const socialPlatforms = await Promise.all(
+          platformPromises.map((data) =>
+            tx.socialPlatform.create({
+              data: {
+                ...data,
+                siteSettings: { connect: { id: existingSettings.id } },
+              },
+            })
+          )
+        );
+
+        // Update the settings
+        const settings = await tx.siteSettings.update({
+          where: { id: existingSettings.id },
+          data: settingsData,
+        });
+
+        // Activity log
+        await tx.activity.create({
+          data: {
+            userId: user.id,
+            action: "SITE_SETTINGS_UPDATE",
+            details: `Updated site settings`,
+            metadata: { settingsId: settings.id },
+          },
+        });
+
+        return { ...settings, openGraph: socialPlatforms };
+      },
+      {
+        maxWait: 10000, // 10 seconds
+        timeout: 10000, // 10 seconds
+      }
+    );
+
+    // Invalidate cache
+    await redis.del(CACHE_KEY);
+
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error("Error updating site settings:", error);
+    
+    if (error instanceof Error && error.message === "No site settings found to update") {
+      return NextResponse.json(
+        { error: "No site settings found to update" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Failed to update site settings" },
+      { status: 500 }
+    );
+  }
+}
