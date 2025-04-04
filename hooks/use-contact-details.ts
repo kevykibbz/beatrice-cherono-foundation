@@ -24,14 +24,14 @@ export function useContactDetails() {
         },
         body: JSON.stringify(data),
       });
-      const responseData = await response.json();
+      const responseData = await response.json(); // Read once and store
       if (!response.ok) {
         toast.error(responseData.error || "Failed to create contact details");
         throw new Error(
           responseData.error || "Failed to create contact details"
         );
       }
-      return response.json();
+      return responseData; // Return the stored data
     },
     onSuccess: () => {
       toast.success("Contact details created successfully!");
@@ -51,14 +51,14 @@ export function useContactDetails() {
         },
         body: JSON.stringify(data),
       });
-      const responseData = await response.json();
+      const responseData = await response.json(); // Read once and store
       if (!response.ok) {
         toast.error(responseData.error || "Failed to update contact details");
         throw new Error(
           responseData.error || "Failed to update contact details"
         );
       }
-      return response.json();
+      return responseData; // Return the stored data
     },
     onSuccess: () => {
       toast.success("Contact details updated successfully!");
