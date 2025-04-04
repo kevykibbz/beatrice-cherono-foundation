@@ -26,7 +26,6 @@ export function useContactDetails() {
       });
       const responseData = await response.json(); // Read once and store
       if (!response.ok) {
-        toast.error(responseData.error || "Failed to create contact details");
         throw new Error(
           responseData.error || "Failed to create contact details"
         );
@@ -53,7 +52,6 @@ export function useContactDetails() {
       });
       const responseData = await response.json(); // Read once and store
       if (!response.ok) {
-        toast.error(responseData.error || "Failed to update contact details");
         throw new Error(
           responseData.error || "Failed to update contact details"
         );
