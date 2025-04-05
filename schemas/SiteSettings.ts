@@ -48,6 +48,17 @@ export const siteSettingsSchema = z.object({
       images: z.array(z.string().url()).optional(),
     }).optional(),
   }).optional(), 
+  contactDetails: z.object({
+    id: z.string(),
+    contactEmail: z.string().email(),
+    phoneNumber: z.string(),
+    address: z.string().nullable().optional(),
+    city: z.string().nullable().optional(),
+    country: z.string().nullable().optional(),
+    postalCode: z.string().nullable().optional(),
+    mapEmbedUrl: z.string().url().nullable().optional(),
+    businessHours: z.string().nullable().optional(),
+  }).optional()
 });
 
 export type FormValues = z.infer<typeof siteSettingsSchema>;

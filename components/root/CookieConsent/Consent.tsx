@@ -44,7 +44,7 @@ export default function Consent() {
 
           {/* Consent Banner at Bottom */}
           <motion.div
-            className="fixed inset-x-5 bottom-10 bg-white p-5 rounded-2xl shadow-2xl flex flex-wrap md:flex-nowrap gap-4 text-center md:text-left items-center justify-center md:justify-between max-w-screen-lg mx-auto z-[200]"
+            className="fixed inset-x-5 bottom-10 bg-white p-5 rounded-full shadow-full flex flex-wrap md:flex-nowrap gap-4 text-center md:text-left items-center justify-center md:justify-between max-w-screen-lg mx-auto z-[200]"
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}

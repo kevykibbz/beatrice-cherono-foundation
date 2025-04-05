@@ -9,6 +9,7 @@ import { FaFacebook, FaTwitter, FaInstagram, FaTiktok } from "react-icons/fa";
 import { PathTypes } from "@/types/types";
 import { fetchSiteSettings } from "@/lib/api/siteSettings";
 import Image from "next/image";
+import { ClockIcon } from "lucide-react";
 
 const paths: PathTypes[] = [
   { name: "Home", path: "/" },
@@ -22,17 +23,19 @@ const paths: PathTypes[] = [
 
 export default async function Footer() {
   let settings;
+  let contactDetails;
   let isLoading = true;
 
   try {
     settings = await fetchSiteSettings();
+    contactDetails = settings.contactDetails;
     isLoading = false;
   } catch (error) {
     console.error("Failed to load site settings:", error);
-    // Fallback to empty settings if fetch fails
     settings = {
       openGraph: {},
     };
+    contactDetails = null;
     isLoading = false;
   }
 
@@ -43,7 +46,7 @@ export default async function Footer() {
           {/* Brand Section */}
           <div>
             <div className="flex items-center gap-4 mb-4">
-              {/* Logo */}
+              {/* Logo Skeleton */}
               {isLoading ? (
                 <div className="h-12 w-12 bg-gray-700 rounded-full animate-pulse"></div>
               ) : settings?.siteLogo ? (
@@ -62,7 +65,7 @@ export default async function Footer() {
                 </div>
               )}
 
-              {/* Site Name */}
+              {/* Site Name Skeleton */}
               {isLoading ? (
                 <div className="h-8 w-48 bg-gray-700 rounded animate-pulse"></div>
               ) : (
@@ -84,6 +87,7 @@ export default async function Footer() {
               within the scope of its operations.
             </p>
 
+            {/* Social Icons with Skeletons */}
             <div className="flex space-x-2">
               {isLoading ? (
                 <>
@@ -132,23 +136,84 @@ export default async function Footer() {
             </div>
           </div>
 
-          {/* Address Section */}
+          {/* Address Section with Skeletons */}
           <div>
-            <h5 className="text-white text-lg font-semibold mb-4">Address</h5>
+            <h5 className="text-white text-lg font-semibold mb-4">Contact Details</h5>
             <ul className="text-gray-400 space-y-2">
-              <li className="flex items-center">
-                <MapPinIcon className="h-5 w-5 mr-3" /> Eldoret, Uasin Gishu
-                county, Kenya
-              </li>
-              <li className="flex items-center">
-                <PhoneIcon className="h-5 w-5 mr-3" /> +254 117483970
-              </li>
-              <li className="flex items-center">
-                <EnvelopeIcon className="h-5 w-5 mr-3" />
-                <span className="truncate">
-                  info@beatricecheronomellyfoundation.org
-                </span>
-              </li>
+              {/* Address */}
+              {isLoading ? (
+                <li className="flex items-center">
+                  <MapPinIcon className="h-5 w-5 mr-3" />
+                  <div className="h-4 w-48 bg-gray-700 rounded animate-pulse"></div>
+                </li>
+              ) : contactDetails?.address ? (
+                <li className="flex items-center">
+                  <MapPinIcon className="h-5 w-5 mr-3" />
+                  {contactDetails.address}
+                </li>
+              ) : null}
+
+              {/* Combined Postal Address */}
+              {isLoading ? (
+                <li className="flex items-center">
+                  <MapPinIcon className="h-5 w-5 mr-3" />
+                  <div className="h-4 w-56 bg-gray-700 rounded animate-pulse"></div>
+                </li>
+              ) : contactDetails?.city ||
+                contactDetails?.country ||
+                contactDetails?.postalCode ? (
+                <li className="flex items-center">
+                  <MapPinIcon className="h-5 w-5 mr-3" />
+                  {[
+                    contactDetails?.city,
+                    contactDetails?.country,
+                    contactDetails?.postalCode,
+                  ]
+                    .filter(Boolean)
+                    .join(", ")}
+                </li>
+              ) : null}
+
+              {/* Phone */}
+              {isLoading ? (
+                <li className="flex items-center">
+                  <PhoneIcon className="h-5 w-5 mr-3" />
+                  <div className="h-4 w-36 bg-gray-700 rounded animate-pulse"></div>
+                </li>
+              ) : contactDetails?.phoneNumber ? (
+                <li className="flex items-center">
+                  <PhoneIcon className="h-5 w-5 mr-3" />
+                  {contactDetails.phoneNumber}
+                </li>
+              ) : null}
+
+              {/* Email */}
+              {isLoading ? (
+                <li className="flex items-center">
+                  <EnvelopeIcon className="h-5 w-5 mr-3" />
+                  <div className="h-4 w-56 bg-gray-700 rounded animate-pulse"></div>
+                </li>
+              ) : contactDetails?.contactEmail ? (
+                <li className="flex items-center">
+                  <EnvelopeIcon className="h-5 w-5 mr-3" />
+                  <span className="truncate">
+                    {contactDetails.contactEmail}
+                  </span>
+                </li>
+              ) : null}
+
+              {/* Business Hours */}
+              {isLoading ? (
+                <li className="flex items-center">
+                  <ClockIcon className="h-5 w-5 mr-3" />
+                  <div className="h-4 w-56 bg-gray-700 rounded animate-pulse"></div>
+                </li>
+              ) : contactDetails?.businessHours ? (
+                <li className="flex items-center">
+                  <ClockIcon className="h-5 w-5 mr-3" />
+                  <span>{contactDetails.businessHours}</span>
+                </li>
+              ) : null}
             </ul>
           </div>
 

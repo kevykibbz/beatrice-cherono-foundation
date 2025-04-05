@@ -145,7 +145,6 @@ export async function GET() {
       return NextResponse.json(JSON.parse(cachedSettings));
     }
 
-    // Fetch with optimized query
     const settings = await prisma.siteSettings.findFirst({
       orderBy: { createdAt: "desc" },
       include: {
@@ -160,8 +159,25 @@ export async function GET() {
             title: true,
           },
         },
+        contactDetails: {
+          select: {
+            id: true,
+            contactEmail: true,
+            phoneNumber: true,
+            address: true,
+            city: true,
+            country: true,
+            postalCode: true,
+            mapEmbedUrl: true,
+            businessHours: true,
+          },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
       },
     });
+
+    console.log("Fetched site settings:", settings);
 
     if (!settings) {
       return NextResponse.json(
@@ -180,7 +196,7 @@ export async function GET() {
         title: platform.title || undefined,
       };
       return acc;
-    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+      //eslint-disable-next-line @typescript-eslint/no-explicit-any
     }, {} as Record<string, any>);
 
     // Transform data
@@ -193,6 +209,10 @@ export async function GET() {
       siteLogo: settings.siteLogo || "",
       siteImages: settings.siteImages,
       openGraph: Object.keys(openGraph).length > 0 ? openGraph : undefined,
+      contactDetails:
+        settings.contactDetails.length > 0
+          ? settings.contactDetails[0]
+          : undefined,
     };
 
     // Cache the response in Redis
@@ -207,7 +227,6 @@ export async function GET() {
     );
   }
 }
-
 
 export async function PUT(request: Request) {
   try {
@@ -314,8 +333,11 @@ export async function PUT(request: Request) {
     return NextResponse.json(result);
   } catch (error) {
     console.error("Error updating site settings:", error);
-    
-    if (error instanceof Error && error.message === "No site settings found to update") {
+
+    if (
+      error instanceof Error &&
+      error.message === "No site settings found to update"
+    ) {
       return NextResponse.json(
         { error: "No site settings found to update" },
         { status: 404 }

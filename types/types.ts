@@ -253,3 +253,52 @@ export type SocialLinks = {
     images?: string[];
   };
 };
+
+export type ContactDetails = {
+  id: string;
+  contactEmail: string;
+  phoneNumber: string;
+  address?: string | null;
+  city?: string | null;
+  country?: string | null;
+  postalCode?: string | null;
+  mapEmbedUrl?: string | null;
+  businessHours?: string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  siteSettingsId?: string | null;
+};
+
+// Type for creating/updating contact details (omits auto-generated fields)
+export type ContactDetailsInput = Omit<
+  ContactDetails, 
+  'id' | 'createdAt' | 'updatedAt'
+>;
+
+// Type for the full address combination
+export type FullAddress = {
+  street?: string | null;
+  city?: string | null;
+  region?: string | null;
+  country?: string | null;
+  postalCode?: string | null;
+};
+
+// Helper type for API responses
+export type ApiContactDetailsResponse = {
+  data: ContactDetails | null;
+  error?: string;
+  status: number;
+};
+
+// If you need a type for the contact details form
+export type ContactDetailsFormValues = {
+  contactEmail: string;
+  phoneNumber: string;
+  address?: string;
+  city?: string;
+  country?: string;
+  postalCode?: string;
+  mapEmbedUrl?: string;
+  businessHours?: string;
+};

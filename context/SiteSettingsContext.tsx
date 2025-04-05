@@ -2,7 +2,7 @@
 
 import { fetchSiteSettings } from "@/lib/api/siteSettings";
 import { getDefaultSiteSettings } from "@/lib/defaults/site-settings";
-import { SiteSettings } from "@/types/types";
+import { SiteSettings, ContactDetails } from "@/types/types";
 import { 
   createContext, 
   useContext, 
@@ -13,65 +13,77 @@ import {
   useMemo
 } from "react";
 
-const SiteSettingsContext = createContext<{
+type SiteContextType = {
   settings: SiteSettings;
+  contactDetails: ContactDetails | null;
   isLoading: boolean;
   error: Error | null;
-}>({
-  settings: getDefaultSiteSettings(),
-  isLoading: true,
-  error: null
-});
-
-// Optimized provider component
-export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
-    const [state, setState] = useState<{
-      settings: SiteSettings;
-      isLoading: boolean;
-      error: Error | null;
-    }>({
-      settings: getDefaultSiteSettings(),
-      isLoading: true,
-      error: null
-    });
-
-    // Memoize default settings to prevent recreation
-    const defaultSettings = useMemo(() => getDefaultSiteSettings(), []);
-
-    // Cache the settings loading function
-    const loadSiteSettings = useCallback(async () => {
-      try {
-        const fetchedSettings = await fetchSiteSettings();
-        setState({
-          settings: { ...defaultSettings, ...fetchedSettings },
-          isLoading: false,
-          error: null
-        });
-      } catch (error) {
-        console.error("Failed to load site settings:", error);
-        setState({
-          settings: defaultSettings,
-          isLoading: false,
-          error: error instanceof Error ? error : new Error(String(error))
-        });
-      }
-    }, [defaultSettings]);
-
-    useEffect(() => {
-      loadSiteSettings();
-    }, [loadSiteSettings]);
-
-    // Memoize context value to prevent unnecessary re-renders
-    const contextValue = useMemo(() => state, [state]);
-
-    return (
-      <SiteSettingsContext.Provider value={contextValue}>
-        {children}
-      </SiteSettingsContext.Provider>
-    );
+  refresh: () => Promise<void>;
 };
 
-// Enhanced custom hook with better type safety
+const SiteSettingsContext = createContext<SiteContextType>({
+  settings: getDefaultSiteSettings(),
+  contactDetails: null,
+  isLoading: true,
+  error: null,
+  refresh: async () => {}
+});
+
+export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
+  const [state, setState] = useState<Omit<SiteContextType, 'refresh'>>({
+    settings: getDefaultSiteSettings(),
+    contactDetails: null,
+    isLoading: true,
+    error: null
+  });
+
+  const defaultSettings = useMemo(() => getDefaultSiteSettings(), []);
+
+  const loadData = useCallback(async () => {
+    try {
+      const [fetchedSettings, contactResponse] = await Promise.all([
+        fetchSiteSettings(),
+        fetch('/api/contact-details').then(res => res.json())
+      ]);
+
+      setState({
+        settings: { ...defaultSettings, ...fetchedSettings },
+        contactDetails: contactResponse,
+        isLoading: false,
+        error: null
+      });
+    } catch (error) {
+      console.error("Failed to load site data:", error);
+      setState({
+        settings: defaultSettings,
+        contactDetails: null,
+        isLoading: false,
+        error: error instanceof Error ? error : new Error(String(error))
+      });
+    }
+  }, [defaultSettings]);
+
+  const refresh = useCallback(async () => {
+    setState(prev => ({ ...prev, isLoading: true }));
+    await loadData();
+  }, [loadData]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const contextValue = useMemo(() => ({
+    ...state,
+    refresh
+  }), [state, refresh]);
+
+  return (
+    <SiteSettingsContext.Provider value={contextValue}>
+      {children}
+    </SiteSettingsContext.Provider>
+  );
+};
+
 export const useSiteSettings = () => {
   const context = useContext(SiteSettingsContext);
   if (!context) {

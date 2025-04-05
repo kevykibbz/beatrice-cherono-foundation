@@ -43,7 +43,7 @@ enum ActivityType {
   TESTIMONIAL_APPROVE
   TESTIMONIAL_DELETE
   TEAM_MEMBER_ADD
-  GALLERY_UPLOAD
+  GALLERY_UPLOAD 
   GALLERY_DELETE
   GALLERY_UPDATE
   GALLERY_CREATE
@@ -130,7 +130,8 @@ model SiteSettings {
   openGraph   SocialPlatform[] @relation("OpenGraphPlatforms")
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
-
+  contactDetails ContactDetails[] @relation("SiteContactDetails") 
+  
   @@map("site_settings")
 }
 
@@ -173,6 +174,9 @@ model ContactDetails {
   businessHours String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  siteSettings SiteSettings? @relation("SiteContactDetails", fields: [siteSettingsId], references: [id])
+  siteSettingsId String? @db.ObjectId 
 
   @@map("contact_details")
 }
