@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { FormValues } from "@/schemas/SiteSettings";
-import { fetchSiteSettings, updateSiteSettings } from "@/lib/api/siteSettings";
+import { fetchSiteSettings, updateSiteSettings } from "@/hooks/site-settings";
 
 export function useUpdateSiteSettings() {
   const queryClient = useQueryClient();

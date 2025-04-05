@@ -13,7 +13,7 @@ import {
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { useState } from "react";
-import { useWindowSize } from "@/hooks/useWindowSize";
+import { useWindowSize } from "@/hooks/use-window-size";
 import { SiteSettingsModal } from "./modals/SiteSettingsModal";
 
 export function NavMain({

@@ -7,7 +7,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { FaFacebook, FaTwitter, FaInstagram, FaTiktok } from "react-icons/fa";
 import { PathTypes } from "@/types/types";
-import { fetchSiteSettings } from "@/lib/api/siteSettings";
+import { fetchSiteSettings } from "@/hooks/site-settings";
 import Image from "next/image";
 import { ClockIcon } from "lucide-react";
 

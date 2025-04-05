@@ -18,7 +18,7 @@ import {
   fetchSiteSettings,
   createSiteSettings,
   updateSiteSettings,
-} from "@/lib/api/siteSettings";
+} from "@/hooks/site-settings";
 
 export default function SiteSettingsForm() {
   const [step, setStep] = useState<number>(1);

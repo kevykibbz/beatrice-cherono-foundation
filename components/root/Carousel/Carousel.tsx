@@ -7,7 +7,7 @@ import { SlideTypes } from "@/types/types";
 import Link from "next/link";
 import Image from "next/image";
 import DualRingLoader from "../Loader/DualRingLoader";
-import { useWindowSize } from "@/hooks/useWindowSize";
+import { useWindowSize } from "@/hooks/use-window-size";
 
 const initialItems: SlideTypes[] = [
   {

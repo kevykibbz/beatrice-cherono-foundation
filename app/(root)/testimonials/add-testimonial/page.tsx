@@ -9,7 +9,7 @@ import Image from "next/image";
 import { useAuth } from "@/hooks/use-session";
 import DualRingLoader from "@/components/root/Loader/DualRingLoader";
 import { useEffect, useState } from "react";
-import { useWindowSize } from "@/hooks/useWindowSize";
+import { useWindowSize } from "@/hooks/use-window-size";
 import React from "react";
 import { LoginModal } from "@/components/Modals/LoginModal";
 

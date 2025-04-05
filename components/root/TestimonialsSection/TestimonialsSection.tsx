@@ -9,7 +9,7 @@ import { AddTestimonialButton } from "./AddTestimonialButton/AddTestimonialButto
 import { Types } from "mongoose";
 import React from "react";
 import DualRingLoader from "../Loader/DualRingLoader";
-import { useTestimonials } from "@/hooks/useTestimonials";
+import { useTestimonials } from "@/hooks/use-testimonials";
 import "./Testimonials.css";
 import { useSession } from "next-auth/react";
 

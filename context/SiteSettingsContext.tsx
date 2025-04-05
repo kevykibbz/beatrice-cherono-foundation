@@ -1,6 +1,6 @@
 "use client"
 
-import { fetchSiteSettings } from "@/lib/api/siteSettings";
+import { fetchSiteSettings } from "@/hooks/site-settings";
 import { getDefaultSiteSettings } from "@/lib/defaults/site-settings";
 import { SiteSettings, ContactDetails } from "@/types/types";
 import { 

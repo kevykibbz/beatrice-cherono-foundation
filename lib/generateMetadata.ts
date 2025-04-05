@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { fetchSiteSettings } from "./api/siteSettings";
+import { fetchSiteSettings } from "../hooks/site-settings";
 
 // Default Keywords
 const keyWords: string[] = [

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useWindowSize } from "@/hooks/useWindowSize";
+import { useWindowSize } from "@/hooks/use-window-size";
 import { AddTestimonialModal } from "../AddTestimonialModal";
 import { LoginModal } from "@/components/Modals/LoginModal"; 
 import { useState } from "react";

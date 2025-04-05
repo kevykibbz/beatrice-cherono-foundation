@@ -177,8 +177,6 @@ export async function GET() {
       },
     });
 
-    console.log("Fetched site settings:", settings);
-
     if (!settings) {
       return NextResponse.json(
         { error: "No site settings found" },
