@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db';
 import { ActivityType } from '@prisma/client';
 import { redis } from '@/lib/redis';
 import { ADMIN_TESTIMONIALS_CACHE_KEY } from '@/config/redis';
+import { FORBIDDEN, UNAUTHORIZED } from '@/config/api-messages';
 
 
 
@@ -13,20 +14,10 @@ export async function PATCH( request: Request) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user) {
-      return NextResponse.json(
-        { message: 'Unauthorized' },
-        { status: 403 }
-      );
-    }
+    if (!session?.user) return UNAUTHORIZED
 
     // Check if user is admin
-    if (session.user.role !== 'admin') {
-      return NextResponse.json(
-        { message: 'Unauthorized' },
-        { status: 403 }
-      );
-    }
+    if (session.user.role !== 'admin') return FORBIDDEN
 
     // Destructure params after awaiting
     const url = new URL(request.url);

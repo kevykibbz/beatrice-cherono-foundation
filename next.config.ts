@@ -26,6 +26,10 @@ const nextConfig: NextConfig = {
     ],
     minimumCacheTTL: 60,
   },
+  reactStrictMode: true,
+  experimental: {
+    optimizeCss: true,
+  },
   async headers() {
     return [
       {
@@ -37,9 +41,26 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+        ],
+      },
     ];
   },
-  webpack(config) {
+  webpack(config,{ dev, isServer }) {
     if (!config.module) {
       config.module = { rules: [] };
     }
@@ -47,6 +68,21 @@ const nextConfig: NextConfig = {
       test: /\.svg$/,
       use: ["@svgr/webpack"],
     });
+
+    if (!dev) {
+      config.cache = {
+        type: 'filesystem',
+        buildDependencies: {
+          config: [__filename],
+        },
+        name: `${isServer ? 'server' : 'client'}-${dev ? 'dev' : 'prod'}`,
+      };
+    }
+
+    // Disable source maps in production
+    if (!dev) {
+      config.devtool = false;
+    }
 
     return config;
   },

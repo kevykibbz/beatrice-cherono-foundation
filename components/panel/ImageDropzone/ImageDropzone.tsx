@@ -12,13 +12,16 @@ export function ImageDropzone({
   onChange,
   folder,
   onUploadStatusChange,
+  onDeleteStatusChange,
 }: {
   value: string;
   onChange: (url: string) => void;
   folder: string;
   onUploadStatusChange: (isUploading: boolean) => void;
+  onDeleteStatusChange: (isDeleting: boolean) => void;
 }) {
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const setUploadStatus = useCallback(
     (uploading: boolean) => {
@@ -26,6 +29,15 @@ export function ImageDropzone({
       onUploadStatusChange?.(uploading);
     },
     [onUploadStatusChange]
+  );
+
+
+  const setDeleteStatus = useCallback(
+    (isDeleting: boolean) => {
+      setIsDeleting(isDeleting);
+      onDeleteStatusChange?.(isDeleting);
+    },
+    [onDeleteStatusChange]
   );
 
   const onDrop = useCallback(
@@ -82,10 +94,10 @@ export function ImageDropzone({
 
   const handleRemove = async (url: string) => {
     const toastId = toast.loading("Removing image...");
-    setUploadStatus(true);
+    setDeleteStatus(true);
     try {
       const publicId = extractPublicId(url);
-      await deleteImage(publicId);
+      await deleteImage(`${folder}/${publicId}`);
       onChange("");
       toast.success("Image deleted successfully", { id: toastId });
     } catch (error) {
@@ -94,7 +106,7 @@ export function ImageDropzone({
         { id: toastId }
       );
     } finally {
-      setUploadStatus(false);
+      setDeleteStatus(false);
     }
   };
   return (
@@ -108,10 +120,10 @@ export function ImageDropzone({
         } ${isUploading ? "opacity-50" : ""}`}
       >
         <input {...getInputProps()} />
-        {isUploading ? (
+        {isUploading || isDeleting ? (
           <div className="flex flex-col items-center justify-center gap-2">
             <Loader2 className="h-8 w-8 animate-spin" />
-            <p className="text-sm">Please wait...</p>
+            <p className="text-sm">{isDeleting? "Deleting image..." :"Uploading image..."}</p>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center gap-2">
@@ -133,14 +145,13 @@ export function ImageDropzone({
       {value && (
         <div className="mt-4 space-y-2">
           <div className="relative group">
-            {/* Image Preview */}
-            <div className="relative h-40 w-full rounded-md overflow-hidden border">
+            <div className="relative h-40 w-full max-w-full rounded-md overflow-hidden border">
               <Image
                 src={value}
                 alt="Preview"
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
               {/* Semi-transparent overlay on hover */}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center">
@@ -149,8 +160,9 @@ export function ImageDropzone({
                   type="button"
                   variant="destructive"
                   size="sm"
+                  disabled={isDeleting}
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent triggering the dropzone
+                    e.stopPropagation();
                     handleRemove(value);
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1 cursor-pointer rounded-full"

@@ -66,10 +66,16 @@ type CarouselImage = {
 export default function LoginPageAdmin() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState<boolean>(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState<boolean>(false);
-  const [isImageUploading, setIsImageUploading] = React.useState<boolean>(false);
-  const [editingImage, setEditingImage] = React.useState<CarouselImage | null>(null);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] =
+    React.useState<boolean>(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] =
+    React.useState<boolean>(false);
+  const [isImageUploading, setIsImageUploading] =
+    React.useState<boolean>(false);
+  const [editingImage, setEditingImage] = React.useState<CarouselImage | null>(
+    null
+  );
+  const [isImageDeleting, setIsImageDeleting] = React.useState<boolean>(false);
 
   // Fetch carousel images
   const {
@@ -147,10 +153,10 @@ export default function LoginPageAdmin() {
 
   const handleEditSubmit = (values: z.infer<typeof imageFormSchema>) => {
     if (editingImage && user?.id) {
-      updateMutation.mutate({ 
-        ...values, 
+      updateMutation.mutate({
+        ...values,
         id: editingImage.id,
-        userId: user.id 
+        userId: user.id,
       });
     }
   };
@@ -209,7 +215,10 @@ export default function LoginPageAdmin() {
       <div className="container mx-auto px-4 py-12">
         <div className="mb-8 flex items-center justify-between">
           <h2 className="text-2xl font-semibold">Carousel Images</h2>
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <Dialog
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
+          >
             <DialogTrigger asChild>
               <Button className="rounded-full cursor-pointer">
                 <Plus className="mr-2 h-4 w-4" />
@@ -274,6 +283,7 @@ export default function LoginPageAdmin() {
                                   value={field.value}
                                   onChange={field.onChange}
                                   onUploadStatusChange={setIsImageUploading}
+                                  onDeleteStatusChange={setIsImageDeleting}
                                   folder="login-carousel"
                                 />
                                 {field.value && (
@@ -310,6 +320,7 @@ export default function LoginPageAdmin() {
                           type="submit"
                           disabled={
                             isImageUploading ||
+                            isImageDeleting ||
                             createMutation.isPending ||
                             !createForm.formState.isValid
                           }
@@ -318,7 +329,11 @@ export default function LoginPageAdmin() {
                           {createMutation.isPending ? (
                             <span className="flex jutsify-center items-center gap-2">
                               <Loader2 className="w-5 h-5 animate-spin" />
-                              Saving...
+                              {isImageUploading
+                                ? "Uploading..."
+                                : isImageDeleting
+                                ? "Deleting..."
+                                : "Saving..."}
                             </span>
                           ) : (
                             "Save Image"
@@ -393,6 +408,7 @@ export default function LoginPageAdmin() {
                                 value={field.value}
                                 onChange={field.onChange}
                                 onUploadStatusChange={setIsImageUploading}
+                                onDeleteStatusChange={setIsImageDeleting}
                                 folder="login-carousel"
                               />
                               {field.value && (
@@ -437,7 +453,11 @@ export default function LoginPageAdmin() {
                         {updateMutation.isPending ? (
                           <span className="flex jutsify-center items-center gap-2">
                             <Loader2 className="w-5 h-5 animate-spin" />
-                            Updating...
+                            {isImageUploading
+                              ? "Uploading..."
+                              : isImageDeleting
+                              ? "Deleting..."
+                              : "Updating..."}
                           </span>
                         ) : (
                           "Update Image"

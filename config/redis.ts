@@ -1,2 +1,9 @@
 export const ADMIN_TESTIMONIALS_CACHE_KEY = 'admin:testimonials';
-export const CACHE_TTL = 300
+export const CAROUSEL_CACHE_KEY = "carousel:images";
+export const CONTACT_CACHE_KEY = "contact:details";
+export const CATEGORIES_CACHE_KEY = "categories:all";
+export const CATEGORIES_IMAGES_CACHE_KEY = "categories:with-images:limit-6";
+export const IMAGES_ALL_CACHE_KEY = "images:all";
+export const SITE_SETTINGS_CACHE_KEY = "site:settings";
+export const CACHE_TTL = 300;
+export const SITE_SETTINGS_CACHE_TTL = 60 * 60 * 5;

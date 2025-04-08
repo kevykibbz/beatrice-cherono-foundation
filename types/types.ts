@@ -115,14 +115,13 @@ export type TestimonialsTypes = {
   testimonial: string;
 };
 
-
 export interface ITestimonial {
   id: string;
   user:
     | Types.ObjectId
     | {
         _id: Types.ObjectId;
-        id?:string;
+        id?: string;
         name: string;
         email: string;
         image?: string;
@@ -175,7 +174,6 @@ export interface PlatformFormFieldProps {
   index?: number;
 }
 
-
 export type SiteSettings = {
   siteName: string;
   description: string;
@@ -194,14 +192,12 @@ export type SiteSettings = {
   };
 };
 
-
 export interface SocialPlatformData {
   url?: string | null;
   cardImage?: string | null;
   description?: string | null;
   images?: string[];
 }
-
 
 export type AuthCheckResult = {
   isAuthenticated: boolean;
@@ -273,8 +269,8 @@ export type ContactDetails = {
 
 // Type for creating/updating contact details (omits auto-generated fields)
 export type ContactDetailsInput = Omit<
-  ContactDetails, 
-  'id' | 'createdAt' | 'updatedAt'
+  ContactDetails,
+  "id" | "createdAt" | "updatedAt"
 >;
 
 // Type for the full address combination
@@ -304,3 +300,73 @@ export type ContactDetailsFormValues = {
   mapEmbedUrl?: string;
   businessHours?: string;
 };
+
+export interface CategoryWithImages {
+  id: string;
+  title: string;
+  description: string | null;
+  images: {
+    id: string;
+    url: string;
+    caption: string | null;
+    createdAt: Date;
+  }[];
+}
+
+
+export type CardImageTypes={
+  id: string;
+  url: string;
+  caption: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type Category = {
+  id: string;
+  title: string;
+  location: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  images: Image[];
+};
+
+export type Image = {
+  id: string;
+  url: string;
+  caption?: string;
+  categoryId: string;
+  createdAt?: string;
+};
+
+
+export interface GalleryCategory {
+  id: string;
+  title: string;
+  location: string;
+  description: string;
+}
+
+export interface GalleryImage {
+  id: string;
+  url: string;
+  caption?: string;
+  categoryId: string;
+  createdAt: string;
+  category: GalleryCategory;
+}
+
+export interface GalleryPagination {
+  currentPage: number;
+  totalPages: number;
+  totalCount: number;
+  perPage: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+export interface GalleryResponse {
+  images: GalleryImage[];
+  pagination: GalleryPagination;
+}

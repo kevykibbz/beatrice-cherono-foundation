@@ -13,8 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 // ======================
 // ENUMS
 // ======================
@@ -43,7 +41,7 @@ enum ActivityType {
   TESTIMONIAL_APPROVE
   TESTIMONIAL_DELETE
   TEAM_MEMBER_ADD
-  GALLERY_UPLOAD 
+  GALLERY_UPLOAD
   GALLERY_DELETE
   GALLERY_UPDATE
   GALLERY_CREATE
@@ -51,65 +49,69 @@ enum ActivityType {
   SITE_SETTINGS_UPDATE
   CONTACT_DETAILS_CREATE
   CONTACT_DETAILS_UPDATE
+  GALLARY_CATEGORY_CREATE
+  GALLARY_CATEGORY_UPDATE
+  GALLARY_CATEGORY_DELETE
+  GALLARY_IMAGES_DELETE
 }
 
 // ======================
 // MODELS
 // ======================
 model User {
-  id           String       @id @default(auto()) @map("_id") @db.ObjectId
-  name         String
-  email        String       @unique
-  password     String
-  provider     Provider     @default(credentials)
-  role         Role         @default(user)
-  image        String?
-  permissions  Permission[] @relation(fields: [permissionIds], references: [id])
-  permissionIds String[]    @db.ObjectId
-  testimonials Testimonial[]
-  activities   Activity[]
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  email         String          @unique
+  password      String
+  provider      Provider        @default(credentials)
+  role          Role            @default(user)
+  image         String?
+  permissions   Permission[]    @relation(fields: [permissionIds], references: [id])
+  permissionIds String[]        @db.ObjectId
+  testimonials  Testimonial[]
+  activities    Activity[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  CarouselImage CarouselImage[]
 
   @@map("users")
-  CarouselImage CarouselImage[]
 }
 
 model Permission {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  name        String     @unique
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  name        String           @unique
   description String?
   resource    String
   action      PermissionAction
-  users       User[]     @relation(fields: [userIds], references: [id])
-  userIds     String[]   @db.ObjectId
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  users       User[]           @relation(fields: [userIds], references: [id])
+  userIds     String[]         @db.ObjectId
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 
   @@map("permissions")
 }
 
 model Testimonial {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  user        User       @relation(fields: [userId], references: [id])
-  userId      String     @db.ObjectId
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String   @db.ObjectId
   role        String
   testimonial String
-  approved    Boolean    @default(false)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  approved    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("testimonials")
 }
 
 model Activity {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  user      User       @relation(fields: [userId], references: [id])
-  userId    String     @db.ObjectId
+  id        String       @id @default(auto()) @map("_id") @db.ObjectId
+  user      User         @relation(fields: [userId], references: [id])
+  userId    String       @db.ObjectId
   action    ActivityType
   details   String
   metadata  Json?
-  createdAt DateTime   @default(now())
+  createdAt DateTime     @default(now())
 
   @@index([userId])
   @@index([action])
@@ -117,66 +119,87 @@ model Activity {
   @@map("activities")
 }
 
-
 model SiteSettings {
-  id          String           @id @default(auto()) @map("_id") @db.ObjectId
-  siteName    String
-  description String
-  keywords    String[]
-  author      String
-  favicon     String?
-  siteLogo    String?
-  siteImages  String[]
-  openGraph   SocialPlatform[] @relation("OpenGraphPlatforms")
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  contactDetails ContactDetails[] @relation("SiteContactDetails") 
-  
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  siteName       String
+  description    String
+  keywords       String[]
+  author         String
+  favicon        String?
+  siteLogo       String?
+  siteImages     String[]
+  openGraph      SocialPlatform[] @relation("OpenGraphPlatforms")
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  contactDetails ContactDetails[] @relation("SiteContactDetails")
+
   @@map("site_settings")
 }
 
 model SocialPlatform {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  platform    String   // e.g. "facebook", "twitter", etc.
+  platform    String // e.g. "facebook", "twitter", etc.
   url         String?
   cardImage   String?
   description String?
   images      String[]
-  title       String?  // Added to match your Zod schema
+  title       String? // Added to match your Zod schema
 
-  siteSettings SiteSettings? @relation("OpenGraphPlatforms", fields: [siteSettingsId], references: [id])
-  siteSettingsId String? @db.ObjectId
+  siteSettings   SiteSettings? @relation("OpenGraphPlatforms", fields: [siteSettingsId], references: [id])
+  siteSettingsId String?       @db.ObjectId
 }
 
-
 model CarouselImage {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String
-  imageUrl    String     @unique
-  createdBy   User       @relation(fields: [userId], references: [id])
-  userId      String     @db.ObjectId
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  imageUrl    String   @unique
+  createdBy   User     @relation(fields: [userId], references: [id])
+  userId      String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("carousel_images")
 }
 
 model ContactDetails {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  contactEmail String
-  phoneNumber  String
-  address      String?
-  city         String?
-  country      String?
-  postalCode   String?
-  mapEmbedUrl  String?
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  contactEmail  String
+  phoneNumber   String
+  address       String?
+  city          String?
+  country       String?
+  postalCode    String?
+  mapEmbedUrl   String?
   businessHours String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  siteSettings SiteSettings? @relation("SiteContactDetails", fields: [siteSettingsId], references: [id])
-  siteSettingsId String? @db.ObjectId 
+  siteSettings   SiteSettings? @relation("SiteContactDetails", fields: [siteSettingsId], references: [id])
+  siteSettingsId String?       @db.ObjectId
 
   @@map("contact_details")
+}
+
+model Category {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String   @unique
+  location    String
+  description String
+  images      Image[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("category")
+}
+
+model Image {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  url        String
+  caption    String?
+  category   Category @relation(fields: [categoryId], references: [id],onDelete:Cascade)
+  categoryId String   @db.ObjectId
+  createdAt  DateTime @default(now())
+
+  @@map("images")
 }

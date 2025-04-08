@@ -99,7 +99,7 @@ export async function requirePermission(
 }
 
 // Special case for admin-only endpoints
-export async function requireAdmin(): Promise<{
+export async function requireAdmin(session: unknown): Promise<{
   allowed: boolean;
   user?: { id: string; role: Role };
   error?: { status: number; message: string };

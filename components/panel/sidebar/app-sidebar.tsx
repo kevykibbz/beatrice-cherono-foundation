@@ -54,7 +54,7 @@ const navItems = {
   extras: [
     { title: "Projects", url: `${BASE_PATH}/projects`, icon: FileBarChartIcon },
     { title: "Events", url: `${BASE_PATH}/events`, icon: CalendarIcon },
-    { title: "Gallery", url: `${BASE_PATH}/gallery`, icon: ImageIcon },
+    { title: "Gallery", url: `${BASE_PATH}/gallary`, icon: ImageIcon },
   ],
   secondary: [
     { title: "Settings", url: `${BASE_PATH}/site-settings`, icon: SettingsIcon },

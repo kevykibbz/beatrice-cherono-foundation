@@ -2,6 +2,7 @@
 
 import { removeBackground } from "./remove-bg";
 
+
 /**
  * Specialized favicon uploader with background removal for supported types
  * (ICO files are uploaded directly without background removal)
@@ -122,7 +123,7 @@ export async function uploadImage(
  * Delete image from Cloudinary (requires server-side implementation)
  */
 export async function deleteImage(publicId: string): Promise<void> {
-  const response = await fetch('/api/cloudinary/delete', {
+  const response = await fetch('/api/cloudinary/image/delete', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

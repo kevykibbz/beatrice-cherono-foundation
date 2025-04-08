@@ -4,17 +4,8 @@ import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redis } from "@/lib/redis";
-
-// Cache key and TTL
-const CACHE_KEY = "site:settings";
-const CACHE_TTL = 300; // 5 minutes in seconds
-
-// Common error responses
-const UNAUTHORIZED = NextResponse.json(
-  { error: "Unauthorized" },
-  { status: 401 }
-);
-const FORBIDDEN = NextResponse.json({ error: "Forbidden" }, { status: 403 });
+import { SITE_SETTINGS_CACHE_TTL, SITE_SETTINGS_CACHE_KEY } from "@/config/redis";
+import { FORBIDDEN, UNAUTHORIZED } from "@/config/api-messages";
 
 export async function POST(request: Request) {
   try {
@@ -126,7 +117,7 @@ export async function POST(request: Request) {
       }
     );
 
-    await redis.del(CACHE_KEY);
+    await redis.del(SITE_SETTINGS_CACHE_KEY);
     return NextResponse.json(result);
   } catch (error) {
     console.error("Error saving site settings:", error);
@@ -140,7 +131,7 @@ export async function POST(request: Request) {
 export async function GET() {
   try {
     // Check Redis cache first
-    const cachedSettings = await redis.get(CACHE_KEY);
+    const cachedSettings = await redis.get(SITE_SETTINGS_CACHE_KEY);
     if (cachedSettings) {
       return NextResponse.json(JSON.parse(cachedSettings));
     }
@@ -214,7 +205,12 @@ export async function GET() {
     };
 
     // Cache the response in Redis
-    await redis.set(CACHE_KEY, JSON.stringify(responseData), "EX", CACHE_TTL);
+    await redis.set(
+      SITE_SETTINGS_CACHE_KEY,
+      JSON.stringify(responseData),
+      "EX",
+      SITE_SETTINGS_CACHE_TTL
+    );
 
     return NextResponse.json(responseData);
   } catch (error) {
@@ -231,7 +227,8 @@ export async function PUT(request: Request) {
     // Authentication and authorization checks
     const session = await getServerSession(authOptions);
     if (!session?.user) return UNAUTHORIZED;
-
+    if (session.user.role !== "admin") return FORBIDDEN;
+    
     const user = await prisma.user.findUnique({
       where: { email: session.user.email ?? undefined },
       select: {
@@ -326,7 +323,7 @@ export async function PUT(request: Request) {
     );
 
     // Invalidate cache
-    await redis.del(CACHE_KEY);
+    await redis.del(SITE_SETTINGS_CACHE_KEY);
 
     return NextResponse.json(result);
   } catch (error) {

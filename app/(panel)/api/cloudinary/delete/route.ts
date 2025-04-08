@@ -1,3 +1,5 @@
+import { FORBIDDEN, UNAUTHORIZED } from "@/config/api-messages";
+import { CACHE_TTL, CAROUSEL_CACHE_KEY } from "@/config/redis";
 import { authOptions } from "@/lib/auth";
 import { requirePermission } from "@/lib/auth-utils";
 import { prisma } from "@/lib/db";
@@ -6,23 +8,10 @@ import { redis } from "@/lib/redis";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
-// Cache keys and TTL
-const CAROUSEL_CACHE_KEY = "carousel:images";
-const CAROUSEL_TTL = 300; // 5 minutes in seconds
-
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { allowed, error } = await requirePermission("carousel", "create");
-  if (!allowed) {
-    return NextResponse.json(
-      { error: error?.message || "Forbidden" },
-      { status: error?.status || 403 }
-    );
-  }
+  if (!session?.user) return UNAUTHORIZED;
+  if (session.user.role !== "admin") return FORBIDDEN;
 
   const { title, description, imageUrl } = await req.json();
   if (!title || !description || !imageUrl) {
@@ -35,7 +24,7 @@ export async function POST(req: Request) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { id: true } // Only select needed fields
+      select: { id: true }, // Only select needed fields
     });
 
     if (!user) {
@@ -63,7 +52,7 @@ export async function POST(req: Request) {
           },
         },
       }),
-      redis.del(CAROUSEL_CACHE_KEY) // Invalidate cache
+      redis.del(CAROUSEL_CACHE_KEY), // Invalidate cache
     ]);
 
     return NextResponse.json(image, { status: 201 });
@@ -101,7 +90,7 @@ export async function GET() {
       CAROUSEL_CACHE_KEY,
       JSON.stringify(images),
       "EX",
-      CAROUSEL_TTL
+      CACHE_TTL
     );
 
     return NextResponse.json(images);
@@ -116,19 +105,10 @@ export async function GET() {
 
 export async function DELETE(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized", }, { status: 401 });
-  }
+  if (!session?.user) return UNAUTHORIZED;
 
   // Check permissions
-  const { allowed, error } = await requirePermission("carousel", "delete");
-  if (!allowed) {
-    return NextResponse.json(
-      { error: error?.message || "Forbidden" },
-      { status: error?.status || 403 }
-    );
-  }
-
+  if (session.user.role !== "admin") return FORBIDDEN;
   try {
     // Extract image ID from request URL
     const url = new URL(req.url);
@@ -143,7 +123,7 @@ export async function DELETE(req: Request) {
 
     const image = await prisma.carouselImage.findUnique({
       where: { id: imageId },
-      select: { id: true, title: true, imageUrl: true } // Only select needed fields
+      select: { id: true, title: true, imageUrl: true }, // Only select needed fields
     });
 
     if (!image) {
@@ -183,7 +163,7 @@ export async function DELETE(req: Request) {
           },
         },
       }),
-      redis.del(CAROUSEL_CACHE_KEY) // Invalidate cache
+      redis.del(CAROUSEL_CACHE_KEY), // Invalidate cache
     ]);
 
     return NextResponse.json(
@@ -191,16 +171,17 @@ export async function DELETE(req: Request) {
       { status: 200 }
     );
   } catch (error) {
+    console.log("error:", error);
     return NextResponse.json(
       {
-        error: error instanceof Error 
-          ? error.message 
-          : "Failed to delete image",
-        details: process.env.NODE_ENV === "development"
-          ? error instanceof Error
-            ? error.stack
-            : null
-          : undefined,
+        error:
+          error instanceof Error ? error.message : "Failed to delete image",
+        details:
+          process.env.NODE_ENV === "development"
+            ? error instanceof Error
+              ? error.stack
+              : null
+            : undefined,
       },
       { status: 500 }
     );

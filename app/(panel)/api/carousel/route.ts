@@ -5,25 +5,12 @@ import { extractPublicId } from "@/lib/extractPublicId";
 import { redis } from "@/lib/redis";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { v2 as cloudinary } from "cloudinary";
 import { Prisma } from "@prisma/client";
+import { FORBIDDEN, UNAUTHORIZED } from "@/config/api-messages";
+import { CACHE_TTL, CAROUSEL_CACHE_KEY } from "@/config/redis";
+import cloudinary from "@/lib/cloudinary-server";
 
-// Cache configuration
-const CAROUSEL_CACHE_KEY = "carousel:images";
-const CACHE_TTL = 300; // 5 minutes in seconds
 
-// Common error responses
-const UNAUTHORIZED = NextResponse.json(
-  { error: "Unauthorized" },
-  { status: 401 }
-);
-const FORBIDDEN = NextResponse.json({ error: "Forbidden" }, { status: 403 });
-
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 export async function POST(req: Request) {
   try {

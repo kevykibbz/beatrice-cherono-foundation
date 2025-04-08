@@ -4,19 +4,15 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redis } from "@/lib/redis";
+import { ADMIN_TESTIMONIALS_CACHE_KEY, CACHE_TTL } from "@/config/redis";
+import { FORBIDDEN, UNAUTHORIZED } from "@/config/api-messages";
 
-const ADMIN_TESTIMONIALS_CACHE_KEY = "admin:testimonials";
-const CACHE_TTL = 300; // 5 minutes in seconds
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const session = await getServerSession(authOptions);
   const isAdmin = session?.user.role === Role.admin;
-  const UNAUTHORIZED = NextResponse.json(
-    { error: "Unauthorized" },
-    { status: 401 }
-  );
-  const FORBIDDEN = NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
 
   try {
     // Authentication and authorization

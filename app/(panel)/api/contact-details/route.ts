@@ -1,16 +1,12 @@
+import { FORBIDDEN, UNAUTHORIZED } from "@/config/api-messages";
+import { SITE_SETTINGS_CACHE_TTL, CONTACT_CACHE_KEY } from "@/config/redis";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redis } from "@/lib/redis";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
-const CACHE_KEY = "contact:details";
-const CACHE_TTL = 300; // 5 minutes
 
-const FORBIDDEN = NextResponse.json(
-  { error: "Forbidden - Admin access required" },
-  { status: 403 }
-);
 
 //eslint-disable-next-line  @typescript-eslint/no-explicit-any
 async function requireAdmin(session: any) {
@@ -27,7 +23,7 @@ async function requireAdmin(session: any) {
 export async function GET() {
   try {
     // Check cache first
-    const cached = await redis.get(CACHE_KEY);
+    const cached = await redis.get(CONTACT_CACHE_KEY);
     if (cached) return NextResponse.json(JSON.parse(cached));
 
     // Fetch from database with site settings relationship
@@ -52,7 +48,7 @@ export async function GET() {
     }
 
     // Cache the result
-    await redis.set(CACHE_KEY, JSON.stringify(contactDetails), "EX", CACHE_TTL);
+    await redis.set(CONTACT_CACHE_KEY, JSON.stringify(contactDetails), "EX", SITE_SETTINGS_CACHE_TTL);
 
     return NextResponse.json(contactDetails);
   } catch (error) {
@@ -68,6 +64,7 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const isAdmin = await requireAdmin(session);
+    if(!session?.user) return UNAUTHORIZED
     if (!isAdmin) return FORBIDDEN;
 
     const body = await req.json();
@@ -124,7 +121,7 @@ export async function POST(req: Request) {
       return contactDetails;
     });
 
-    await redis.del(CACHE_KEY);
+    await redis.del(CONTACT_CACHE_KEY);
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
     console.error("Error creating contact details:", error);
@@ -139,6 +136,7 @@ export async function PUT(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const isAdmin = await requireAdmin(session);
+    if(!session?.user) return UNAUTHORIZED
     if (!isAdmin) return FORBIDDEN;
 
     const body = await req.json();
@@ -215,7 +213,7 @@ export async function PUT(req: Request) {
       return contactDetails;
     });
 
-    await redis.del(CACHE_KEY);
+    await redis.del(CONTACT_CACHE_KEY);
     return NextResponse.json(result);
   } catch (error) {
     console.error("Error updating contact details:", error);

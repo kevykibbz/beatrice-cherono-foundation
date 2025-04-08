@@ -8,6 +8,7 @@ import {
   ChevronRight,
   EyeIcon,
   Loader2,
+  RefreshCw,
   UserIcon,
   XCircle,
 } from "lucide-react";
@@ -33,7 +34,8 @@ const isUserPopulated = (user: ITestimonial["user"]): user is PopulatedUser => {
 
 export default function TestimonialsPage() {
   const [page, setPage] = useState<number>(1);
-  const { data, isLoading, isError } = useAdminTestimonials(page, 10);
+  const { data, isLoading, refetch, isFetching, isError } =
+    useAdminTestimonials(page, 10);
   const [showLoading, setShowLoading] = useState<boolean>(true);
   const [testimonialToView, setTestimonialToView] =
     useState<ITestimonial | null>(null);
@@ -111,8 +113,7 @@ export default function TestimonialsPage() {
 
     return () => clearTimeout(timer);
   }, []);
-  
-  
+
   if (isError) {
     return (
       <div className="relative">
@@ -121,6 +122,23 @@ export default function TestimonialsPage() {
           <p className="text-base font-medium text-red-700 sm:text-lg">
             Failed to load testimonials. Please try again.
           </p>
+          <Button
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-white hover:bg-primary/90 disabled:opacity-60"
+          >
+            {isFetching ? (
+              <div className="flex justify-center items-center gap-2">
+                <RefreshCw className="animate-spin h-4 w-4" />
+                Retrying...
+              </div>
+            ) : (
+              <div className="flex justify-center items-center gap-2">
+                <RefreshCw className="h-4 w-4" />
+                Retry
+              </div>
+            )}
+          </Button>
         </div>
       </div>
     );
