@@ -3,10 +3,8 @@ import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redis } from "@/lib/redis";
+import { TESTIMONIAL_CACHE_TTL, TESTIMONIALS_CACHE_PREFIX } from "@/config/redis";
 
-// Cache configuration
-const TESTIMONIALS_CACHE_PREFIX = "testimonials";
-const CACHE_TTL = 300; // 5 minutes in seconds
 
 export async function GET(request: Request) {
   try {
@@ -27,11 +25,8 @@ export async function GET(request: Request) {
     const approvedOnly = approvedParam?.toLowerCase() === "true";
 
     // Generate cache key based on query and permissions
-    const cacheKey = `${TESTIMONIALS_CACHE_PREFIX}:${
-      approvedOnly ? "approved" : "all"
-    }:${isAdmin ? "admin" : "public"}`;
+    const cacheKey = `${TESTIMONIALS_CACHE_PREFIX}:${approvedOnly ? "approved" : "all"}:${isAdmin ? "admin" : "public"}`;
 
-    // Try to get from cache first
 
     const cachedTestimonials = await redis.get(cacheKey);
     if (cachedTestimonials) {
@@ -64,7 +59,7 @@ export async function GET(request: Request) {
 
 
     // Cache the result
-    await redis.set(cacheKey, JSON.stringify(testimonials), "EX", CACHE_TTL);
+    await redis.set(cacheKey, JSON.stringify(testimonials), "EX", TESTIMONIAL_CACHE_TTL);
     return NextResponse.json(testimonials);
   } catch (error) {
     console.error("Error fetching testimonials:", error);

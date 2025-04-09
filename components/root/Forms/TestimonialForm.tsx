@@ -73,7 +73,16 @@ export function TestimonialForm({ onSuccess }: TestimonialFormProps) {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form 
+          onSubmit={form.handleSubmit(onSubmit)} 
+          className="space-y-6"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              form.handleSubmit(onSubmit)();
+            }
+          }}
+          >
           <FormField
             control={form.control}
             name="name"

@@ -3,9 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redis } from "@/lib/redis";
+import { TESTIMONIALS_CACHE_PREFIX } from "@/config/redis";
 
-// Cache configuration (should match GET endpoint)
-const TESTIMONIALS_CACHE_PREFIX = "testimonials";
 
 export async function POST(request: NextRequest) {
   try {

@@ -1,5 +1,5 @@
 import { FORBIDDEN, UNAUTHORIZED } from "@/config/api-messages";
-import { SITE_SETTINGS_CACHE_TTL, CONTACT_CACHE_KEY } from "@/config/redis";
+import { SITE_CONTACT_DETAILS_CACHE_TTL, CONTACT_CACHE_KEY } from "@/config/redis";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redis } from "@/lib/redis";
@@ -48,7 +48,7 @@ export async function GET() {
     }
 
     // Cache the result
-    await redis.set(CONTACT_CACHE_KEY, JSON.stringify(contactDetails), "EX", SITE_SETTINGS_CACHE_TTL);
+    await redis.set(CONTACT_CACHE_KEY, JSON.stringify(contactDetails), "EX", SITE_CONTACT_DETAILS_CACHE_TTL);
 
     return NextResponse.json(contactDetails);
   } catch (error) {

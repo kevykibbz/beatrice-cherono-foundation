@@ -63,7 +63,16 @@ export function EmailLoginForm() {
   return (
     <React.Fragment>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form 
+          onSubmit={form.handleSubmit(onSubmit)} 
+          className="space-y-4"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              form.handleSubmit(onSubmit)();
+            }
+          }}
+          >
           <FormField
             control={form.control}
             name="email"

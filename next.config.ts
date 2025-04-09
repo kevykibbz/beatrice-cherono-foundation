@@ -1,4 +1,6 @@
+import {withSentryConfig} from "@sentry/nextjs";
 import type { NextConfig } from "next";
+require('dd-trace').init()
 
 const nextConfig: NextConfig = {
   images: {
@@ -29,6 +31,11 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   experimental: {
     optimizeCss: true,
+    optimizePackageImports: [
+      '@prisma/client',
+      '@heroicons/react',
+      'react-icons'
+    ]
   },
   async headers() {
     return [
@@ -88,4 +95,15 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const sentryWebpackPluginOptions = {
+  silent: true,
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  widenClientFileUpload: true,
+  transpileClientSDK: true,
+  tunnelRoute: "/monitoring",
+  hideSourceMaps: true,
+  disableLogger: true,
+};
+
+export default withSentryConfig(nextConfig, sentryWebpackPluginOptions);
